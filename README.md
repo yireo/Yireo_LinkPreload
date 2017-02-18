@@ -21,8 +21,6 @@ Afterwards, enable this module, run the setup scripts and flush the cache:
 
 You should be able to see new `Link:` headers by debugging the HTTP headers of the HTML source of your Magento pages.
 
-## Workings
-
 ## Status
 Stable
 
