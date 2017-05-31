@@ -17,7 +17,7 @@ Afterwards, enable this module, run the setup scripts and flush the cache:
 
     ./bin/magento module:enable Yireo_ServerPush
     ./bin/magento setup:upgrade
-    ./bin/magento setup:upgrade
+    ./bin/magento cache:flush
 
 You should be able to see new `Link:` headers by debugging the HTTP headers of the HTML source of your Magento pages.
 
