@@ -6,7 +6,6 @@ namespace Yireo\ServerPush\Plugin;
 
 use Magento\Framework\View\Asset\AssetInterface;
 use Magento\Framework\View\Asset\GroupedCollection as Subject;
-use Zend\Http\Header\GenericMultiHeader;
 
 /**
  * Class GroupedCollection
