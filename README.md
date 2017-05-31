@@ -22,11 +22,8 @@ Afterwards, enable this module, run the setup scripts and flush the cache:
 You should be able to see new `Link:` headers by debugging the HTTP headers of the HTML source of your Magento pages.
 
 ## Status
-Stable
+Expirimental, needs performance and real-world testing
 
 ## Todo
-`\Magento\Framework\App\Response\Http::setHeader()` is supposed to allow for multiple headers with the same name, but it
-does not work. For now a simple `header()` is used instead.
-
 This extension does not support HTTP/2 Server Push for scripts that are loaded via RequireJS. RequireJS itself is pushed
 though.
