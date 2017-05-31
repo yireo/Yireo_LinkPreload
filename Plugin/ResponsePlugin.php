@@ -64,8 +64,8 @@ class ResponsePlugin
         // Find all stylesheets
         $stylesheets = $crawler->filter('link[rel="stylesheet"][type="text/css"][href]')->extract(['href']);
         foreach ($stylesheets as $link) {
+            $link = $this->prepareLink($link);
             if ($link) {
-                $link = $this->prepareLink($link);
                 $values[] = "<{$link}>; rel=preload; as=style";
             }
         }
@@ -73,8 +73,8 @@ class ResponsePlugin
         // Find all scripts
         $scripts = $crawler->filter('script[type="text/javascript"][src]')->extract(['src']);
         foreach ($scripts as $link) {
+            $link = $this->prepareLink($link);
             if ($link) {
-                $link = $this->prepareLink($link);
                 $values[] = "<{$link}>; rel=preload; as=script";
             }
         }
@@ -85,13 +85,29 @@ class ResponsePlugin
     }
 
     /**
-     * Replaced the baseUrl with a leading / to save size.
+     * Prepare and check the link
      *
      * @param $link
      * @return string
      */
     protected function prepareLink($link)
     {
+        if (empty($link)) {
+            return null;
+        }
+
+        // Absolute urls
+        if ($link[0] === '/') {
+            return $link;
+        }
+
+        // If it's not absolute, we only parse absolute urls
+        $scheme = parse_url($link, PHP_URL_SCHEME);
+        if ( ! in_array($scheme, ['http', 'https'])) {
+            return null;
+        }
+
+        // Replace the baseUrl to save some chars.
         if (strpos($link, $this->baseUrl) === 0) {
             $link = '/' . ltrim(substr($link, strlen($this->baseUrl)), '/');
         }
