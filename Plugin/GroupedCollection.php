@@ -6,6 +6,7 @@ namespace Yireo\ServerPush\Plugin;
 
 use Magento\Framework\View\Asset\AssetInterface;
 use Magento\Framework\View\Asset\GroupedCollection as Subject;
+use Zend\Http\Header\GenericMultiHeader;
 
 /**
  * Class GroupedCollection
@@ -18,15 +19,19 @@ class GroupedCollection
      */
     protected $httpResponse;
 
+    /** @var  string */
+    protected $baseUrl;
     /**
      * GroupedCollection constructor.
      * @param \Magento\Framework\App\Response\Http $httpResponse
      */
     public function __construct(
-        \Magento\Framework\App\Response\Http $httpResponse
+        \Magento\Framework\App\Response\Http $httpResponse,
+        \Magento\Store\Model\StoreManagerInterface $storeManager
     )
     {
         $this->httpResponse = $httpResponse;
+        $this->baseUrl = $storeManager->getStore()->getBaseUrl();
     }
 
     /**
@@ -38,7 +43,7 @@ class GroupedCollection
      */
     public function beforeAdd(Subject $subject, $identifier, AssetInterface $asset, array $properties = [])
     {
-        $this->addHeaderLink($identifier, $asset->getUrl());
+        $this->addHeaderLink($identifier, $asset->getUrl(), $asset->getContentType());
 
         return [$identifier, $asset, $properties];
     }
@@ -47,13 +52,17 @@ class GroupedCollection
      * @param string $identifier
      * @param string $url
      */
-    protected function addHeaderLink($identifier, $url)
+    protected function addHeaderLink($identifier, $url, $contentType)
     {
-        if (preg_match('/\.js$/', $identifier)) {
+        if (strpos($url, $this->baseUrl) === 0) {
+            $url = '/' . ltrim(substr($url, strlen($this->baseUrl)), '/');
+        }
+
+        if ($contentType === 'js') {
             $this->addJsLink($url);
         }
 
-        if (preg_match('/\.css/', $identifier)) {
+        if ($contentType === 'css') {
             $this->addCssLink($url);
         }
     }
@@ -63,8 +72,7 @@ class GroupedCollection
      */
     protected function addJsLink($url)
     {
-        header('Link: '.$url.'; rel=preload; as=script', false);
-        //$this->httpResponse->setHeader('Link', $url.'; rel=preload; as=script', false);
+        $this->addLinkHeader("<{$url}>; rel=preload; as=script");
     }
 
     /**
@@ -72,7 +80,17 @@ class GroupedCollection
      */
     protected function addCssLink($url)
     {
-        header('Link: '.$url.'; rel=preload; as=style', false);
-        //$this->httpResponse->setHeader('Link', $url.'; rel=preload; as=style', false);
+        $this->addLinkHeader("<{$url}>; rel=preload; as=style");
+    }
+
+    protected function addLinkHeader($value)
+    {
+        $header = $this->httpResponse->getHeader('Link');
+
+        if ($header) {
+            $value = $header->getFieldValue() . ', ' . $value;
+        }
+
+        $this->httpResponse->setHeader('Link', $value, true);
     }
 }
