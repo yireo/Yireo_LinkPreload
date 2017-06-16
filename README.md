@@ -21,6 +21,12 @@ Afterwards, enable this module, run the setup scripts and flush the cache:
 
 You should be able to see new `Link:` headers by debugging the HTTP headers of the HTML source of your Magento pages.
 
+## NGINX
+HTTP/2 Server Push doesn't work out of the box in nginx unless you're using NGINX Plus. 
+More information about this topic:
+- https://stackoverflow.com/questions/33537199/does-the-nginx-http-2-module-support-server-push
+- https://serverfault.com/questions/765258/use-http-2-0-between-nginx-reverse-proxy-and-backend-webserver
+
 ## Status
 Expirimental, needs performance and real-world testing
 
