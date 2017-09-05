@@ -13,7 +13,7 @@
     ],
     "require": {
         "magento/framework": "^100.1.0|^101.0.0",
-        "php": ">=5.6.0",
+        "php": ">=7.0.0",
         "symfony/dom-crawler": "^2.7|^3.0",
         "symfony/css-selector": "^2.7|^3.0"
     },
