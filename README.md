@@ -26,6 +26,8 @@ HTTP/2 Server Push doesn't work with Nginx and they have no plans in supporting 
 - https://stackoverflow.com/questions/33537199/does-the-nginx-http-2-module-support-server-push
 - https://serverfault.com/questions/765258/use-http-2-0-between-nginx-reverse-proxy-and-backend-webserver
 
+**UPDATE**: HTTP/2 Server Push is available since [NGINX 1.13.9](https://www.nginx.com/blog/nginx-1-13-9-http2-server-push/). 
+
 ## Status
 Experimental, needs performance and real-world testing
 
