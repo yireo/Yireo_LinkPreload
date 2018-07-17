@@ -1,10 +1,14 @@
 <?php
+declare(strict_types=1);
 
 namespace Yireo\ServerPush\Plugin;
 
 use Magento\Framework\App\Request\Http as HttpRequest;
 use Magento\Framework\App\Response\Http as HttpResponse;
 use Magento\Framework\App\ResponseInterface;
+use Magento\Framework\App\State as AppState;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Model\StoreManagerInterface;
 use Symfony\Component\DomCrawler\Crawler;
 
@@ -16,22 +20,40 @@ class ResponsePlugin
     /** @var  HttpRequest */
     protected $request;
 
-    /** @var  string */
-    protected $baseUrl;
+    /**
+     * @var StoreManagerInterface
+     */
+    private $storeManager;
+
+    /**
+     * @var AppState
+     */
+    private $appState;
 
     /**
      * \Magento\Store\Model\StoreManagerInterface $storeManager
+     *
+     * @param HttpRequest $request
+     * @param StoreManagerInterface $storeManager
+     * @param AppState $appState
      */
-    public function __construct(HttpRequest $request, StoreManagerInterface $storeManager)
-    {
+    public function __construct(
+        HttpRequest $request,
+        StoreManagerInterface $storeManager,
+        AppState $appState
+    ) {
         $this->request = $request;
-        $this->baseUrl = $storeManager->getStore()->getBaseUrl();
+        $this->storeManager = $storeManager;
+        $this->appState = $appState;
     }
 
     /**
      * Intercept the sendResponse call
      *
      * @param ResponseInterface $response
+     *
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
      */
     public function beforeSendResponse(ResponseInterface $response)
     {
@@ -44,17 +66,37 @@ class ResponsePlugin
      * Check if the headers needs to be sent.
      *
      * @param HttpResponse $response
+     *
      * @return bool
+     * @throws LocalizedException
      */
     protected function shouldAddLinkHeader(HttpResponse $response)
     {
-        return (!$response->isRedirect() && !$this->request->isAjax() && $response->getContent());
+        if ($this->appState->getAreaCode() !== 'frontend') {
+            return false;
+        }
+
+        if ($response->isRedirect()) {
+            return false;
+        }
+
+        if ($this->request->isAjax()) {
+            return false;
+        }
+
+        if (!$response->getContent()) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
      * Add Link header to the response, based on the content
      *
      * @param HttpResponse $response
+     *
+     * @throws NoSuchEntityException
      */
     protected function addLinkHeader(HttpResponse $response)
     {
@@ -62,11 +104,11 @@ class ResponsePlugin
         $crawler = new Crawler($response->getContent());
 
         // Find all stylesheets
-        $stylesheets = $crawler->filter('link[rel="stylesheet"][type="text/css"][href]')->extract(['href']);
+        $stylesheets = $crawler->filter('link[as="style"]')->extract(['href']);
         foreach ($stylesheets as $link) {
             $link = $this->prepareLink($link);
-            if ($link) {
-                $values[] = "<{$link}>; rel=preload; as=style";
+            if (!empty($link)) {
+                $values[] = "<".$link.">; rel=preload; as=style";
             }
         }
 
@@ -74,8 +116,8 @@ class ResponsePlugin
         $scripts = $crawler->filter('script[type="text/javascript"][src]')->extract(['src']);
         foreach ($scripts as $link) {
             $link = $this->prepareLink($link);
-            if ($link) {
-                $values[] = "<{$link}>; rel=preload; as=script";
+            if (!empty($link)) {
+                $values[] = "<".$link.">; rel=preload; as=script";
             }
         }
 
@@ -83,8 +125,8 @@ class ResponsePlugin
         $images = $crawler->filter('img[src]')->extract(['src']);
         foreach ($images as $link) {
             $link = $this->prepareLink($link);
-            if ($link) {
-                $values[] = "<{$link}>; rel=preload; as=image";
+            if (!empty($link)) {
+                $values[] = "<".$link.">; rel=preload; as=image";
             }
         }
 
@@ -96,13 +138,15 @@ class ResponsePlugin
     /**
      * Prepare and check the link
      *
-     * @param $link
+     * @param string $link
+     *
      * @return string
+     * @throws NoSuchEntityException
      */
-    protected function prepareLink($link)
+    protected function prepareLink(string $link): string
     {
         if (empty($link)) {
-            return null;
+            return '';
         }
 
         // Absolute urls
@@ -113,12 +157,13 @@ class ResponsePlugin
         // If it's not absolute, we only parse absolute urls
         $scheme = parse_url($link, PHP_URL_SCHEME);
         if ( ! in_array($scheme, ['http', 'https'])) {
-            return null;
+            return '';
         }
 
         // Replace the baseUrl to save some chars.
-        if (strpos($link, $this->baseUrl) === 0) {
-            $link = '/' . ltrim(substr($link, strlen($this->baseUrl)), '/');
+        $baseUrl = $this->storeManager->getStore()->getBaseUrl();
+        if (strpos($link, $baseUrl) === 0) {
+            $link = '/' . ltrim(substr($link, strlen($baseUrl)), '/');
         }
 
         return $link;
