@@ -21,11 +21,8 @@ Afterwards, enable this module, run the setup scripts and flush the cache:
 
 You should be able to see new `Link:` headers by debugging the HTTP headers of the HTML source of your Magento pages.
 
-## NGINX
-HTTP/2 Server Push is available since [NGINX 1.13.9](https://www.nginx.com/blog/nginx-1-13-9-http2-server-push/). 
-
 ## Status
-Experimental, needs performance and real-world testing
+Expirimental, needs performance and real-world testing
 
 ## Todo
 This extension does not support HTTP/2 Server Push for scripts that are loaded via RequireJS. RequireJS itself is pushed
