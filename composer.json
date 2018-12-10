@@ -13,7 +13,7 @@
     ],
     "require": {
         "magento/framework": "^100.0|^101.0|^102.0|^103.0",
-        "magento/module-store": "100.0|^101.0",
+        "magento/module-store": "^100.0|^101.0",
         "php": ">=7.0",
         "symfony/dom-crawler": "^2.7|^3.0",
         "symfony/css-selector": "^2.7|^3.0"
@@ -24,7 +24,7 @@
     "autoload": {
         "psr-4": {
             "Yireo\\ServerPush\\": ""
-        },        
+        },
         "files": [
             "registration.php"
         ]
