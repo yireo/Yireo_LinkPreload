@@ -3,8 +3,10 @@ declare(strict_types=1);
 
 namespace Yireo\ServerPush\Plugin;
 
+use Magento\Store\Model\ScopeInterface;
 use Magento\Framework\App\Request\Http as HttpRequest;
 use Magento\Framework\App\Response\Http as HttpResponse;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\App\State as AppState;
 use Magento\Framework\Exception\LocalizedException;
@@ -31,6 +33,11 @@ class ResponsePlugin
     private $appState;
 
     /**
+     * @var ScopeInterface
+     */
+    protected $scopeConfig;
+
+    /**
      * \Magento\Store\Model\StoreManagerInterface $storeManager
      *
      * @param HttpRequest $request
@@ -40,11 +47,13 @@ class ResponsePlugin
     public function __construct(
         HttpRequest $request,
         StoreManagerInterface $storeManager,
-        AppState $appState
+        AppState $appState,
+        ScopeConfigInterface $scopeConfigInterface
     ) {
         $this->request = $request;
         $this->storeManager = $storeManager;
         $this->appState = $appState;
+        $this->scopeConfig = $scopeConfigInterface;
     }
 
     /**
@@ -72,6 +81,10 @@ class ResponsePlugin
      */
     protected function shouldAddLinkHeader(HttpResponse $response)
     {
+        if (! $this->scopeConfig->getValue('dev/debug/server_push', ScopeInterface::SCOPE_STORE)) {
+            return false;
+        }
+
         if ($this->appState->getAreaCode() !== 'frontend') {
             return false;
         }
@@ -156,7 +169,7 @@ class ResponsePlugin
 
         // If it's not absolute, we only parse absolute urls
         $scheme = parse_url($link, PHP_URL_SCHEME);
-        if ( ! in_array($scheme, ['http', 'https'])) {
+        if (! in_array($scheme, ['http', 'https'])) {
             return '';
         }
 
