@@ -1,0 +1,12 @@
+php-7.1-linting:
+  image: php:7.1
+  script:
+    - sh -c 'if find . -name "*.php" -exec php -l {} 2>&1 \; | grep -v "^No syntax errors detected"; then exit 1; fi'
+
+php-7.1-phpcs:
+  image: php:7.1
+  script:
+    - phpcs --colors --standard=PSR2 --report=full .
+    - phpcs --colors --standard=PSR2 --report=summary .
+    - phpcs --colors --standard=PSR2 --report=gitblame .
+  allow_failure: true
