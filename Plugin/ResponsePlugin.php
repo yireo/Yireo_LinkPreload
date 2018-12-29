@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Yireo\ServerPush\Plugin;
 
+use Magento\Framework\Stdlib\CookieManagerInterface;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Framework\App\Request\Http as HttpRequest;
 use Magento\Framework\App\Response\Http as HttpResponse;
@@ -36,6 +37,10 @@ class ResponsePlugin
      * @var ScopeInterface
      */
     protected $scopeConfig;
+    /**
+     * @var CookieManagerInterface
+     */
+    private $cookieManager;
 
     /**
      * \Magento\Store\Model\StoreManagerInterface $storeManager
@@ -43,17 +48,21 @@ class ResponsePlugin
      * @param HttpRequest $request
      * @param StoreManagerInterface $storeManager
      * @param AppState $appState
+     * @param ScopeConfigInterface $scopeConfigInterface
+     * @param CookieManagerInterface $cookieManager
      */
     public function __construct(
         HttpRequest $request,
         StoreManagerInterface $storeManager,
         AppState $appState,
-        ScopeConfigInterface $scopeConfigInterface
+        ScopeConfigInterface $scopeConfigInterface,
+        CookieManagerInterface $cookieManager
     ) {
         $this->request = $request;
         $this->storeManager = $storeManager;
         $this->appState = $appState;
         $this->scopeConfig = $scopeConfigInterface;
+        $this->cookieManager = $cookieManager;
     }
 
     /**
@@ -81,7 +90,7 @@ class ResponsePlugin
      */
     protected function shouldAddLinkHeader(HttpResponse $response)
     {
-        if (! $this->scopeConfig->getValue('dev/debug/server_push', ScopeInterface::SCOPE_STORE)) {
+        if (!$this->scopeConfig->getValue('dev/debug/server_push', ScopeInterface::SCOPE_STORE)) {
             return false;
         }
 
@@ -99,6 +108,12 @@ class ResponsePlugin
 
         if (!$response->getContent()) {
             return false;
+        }
+
+        if ($cookieValue = (int)$this->cookieManager->getCookie('serverpush')) {
+            if ($cookieValue === 1) {
+                return false;
+            }
         }
 
         return true;
@@ -121,7 +136,7 @@ class ResponsePlugin
         foreach ($stylesheets as $link) {
             $link = $this->prepareLink($link);
             if (!empty($link)) {
-                $values[] = "<".$link.">; rel=preload; as=style";
+                $values[] = "<" . $link . ">; rel=preload; as=style";
             }
         }
 
@@ -130,7 +145,7 @@ class ResponsePlugin
         foreach ($scripts as $link) {
             $link = $this->prepareLink($link);
             if (!empty($link)) {
-                $values[] = "<".$link.">; rel=preload; as=script";
+                $values[] = "<" . $link . ">; rel=preload; as=script";
             }
         }
 
@@ -139,7 +154,7 @@ class ResponsePlugin
         foreach ($images as $link) {
             $link = $this->prepareLink($link);
             if (!empty($link)) {
-                $values[] = "<".$link.">; rel=preload; as=image";
+                $values[] = "<" . $link . ">; rel=preload; as=image";
             }
         }
 
@@ -169,7 +184,7 @@ class ResponsePlugin
 
         // If it's not absolute, we only parse absolute urls
         $scheme = parse_url($link, PHP_URL_SCHEME);
-        if (! in_array($scheme, ['http', 'https'])) {
+        if (!in_array($scheme, ['http', 'https'])) {
             return '';
         }
 
