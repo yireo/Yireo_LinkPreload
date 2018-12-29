@@ -3,7 +3,7 @@
         <section id="dev">
             <group id="debug">
                 <field id="server_push" translate="label" type="select" sortOrder="1" showInDefault="1">
-                    <label>Server http2 push enabled</label>
+                    <label>Enable HTTP/2 Server Push</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
             </group>
