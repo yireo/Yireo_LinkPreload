@@ -1,5 +1,5 @@
 var config = {
-    "path": {
+    paths: {
         "serverpush": "Yireo_ServerPush/js/cookie"
     }
 };
