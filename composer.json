@@ -1,32 +1,35 @@
 {
-    "name": "yireo/magento2-serverpush",
-    "license": "OSL-3.0",
-    "type": "magento2-module",
-    "homepage": "https://github.com/yireo/Yireo_ServerPush",
-    "description": "Magento 2 extension to set HTTP Link headers for primary resources to allow for HTTP/2 Server Push",
-    "keywords":[ "composer-installer", "magento"],
-    "authors": [
-        {
-            "name": "Jisse Reitsma (Yireo)",
-            "email": "jisse@yireo.com"
-        }
-    ],
-    "require": {
-        "magento/framework": "^100.0|^101.0|^102.0|^103.0",
-        "magento/module-store": "^100.0|^101.0",
-        "php": ">=7.0",
-        "symfony/dom-crawler": "^2.7|^3.0|^4.0",
-        "symfony/css-selector": "^2.7|^3.0|^4.0"
-    },
-    "require-dev":{
-        "composer/composer":"*@dev"
-    },
-    "autoload": {
-        "psr-4": {
-            "Yireo\\ServerPush\\": ""
-        },
-        "files": [
-            "registration.php"
-        ]
+  "name": "yireo/magento2-serverpush",
+  "license": "OSL-3.0",
+  "type": "magento2-module",
+  "homepage": "https://github.com/yireo/Yireo_ServerPush",
+  "description": "Magento 2 extension to set HTTP Link headers for primary resources to allow for HTTP/2 Server Push",
+  "keywords": [
+    "composer-installer",
+    "magento"
+  ],
+  "authors": [
+    {
+      "name": "Jisse Reitsma (Yireo)",
+      "email": "jisse@yireo.com"
     }
+  ],
+  "require": {
+    "magento/framework": "^100.0|^101.0|^102.0|^103.0",
+    "magento/module-store": "^100.0|^101.0",
+    "symfony/dom-crawler": "^2.7|^3.0|^4.0",
+    "symfony/css-selector": "^2.7|^3.0|^4.0",
+    "php": ">=7.0"
+  },
+  "require-dev": {
+    "composer/composer": "*@dev"
+  },
+  "autoload": {
+    "psr-4": {
+      "Yireo\\ServerPush\\": ""
+    },
+    "files": [
+      "registration.php"
+    ]
+  }
 }
