@@ -20,7 +20,7 @@
     "magento/module-store": "^100.0|^101.0",
     "symfony/dom-crawler": "^2.7|^3.0|^4.0",
     "symfony/css-selector": "^2.7|^3.0|^4.0",
-    "php": ">=7.0"
+    "php": ">=7.1"
   },
   "require-dev": {
     "composer/composer": "*@dev"
