@@ -4,24 +4,29 @@ declare(strict_types=1);
 namespace Yireo\ServerPush\Plugin;
 
 use Magento\Framework\Stdlib\CookieManagerInterface;
-use Magento\Store\Model\ScopeInterface;
 use Magento\Framework\App\Request\Http as HttpRequest;
 use Magento\Framework\App\Response\Http as HttpResponse;
-use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\ResponseInterface;
-use Magento\Framework\App\State as AppState;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Model\StoreManagerInterface;
 use Symfony\Component\DomCrawler\Crawler;
+use Yireo\ServerPush\Config\Config;
 
 /**
  * Plugin to add a Link header for each static asset
  */
 class ResponsePlugin
 {
-    /** @var  HttpRequest */
-    protected $request;
+    /**
+     * @var Config
+     */
+    private $config;
+
+    /**
+     * @var HttpRequest
+     */
+    private $request;
 
     /**
      * @var StoreManagerInterface
@@ -29,39 +34,25 @@ class ResponsePlugin
     private $storeManager;
 
     /**
-     * @var AppState
-     */
-    private $appState;
-
-    /**
-     * @var ScopeInterface
-     */
-    protected $scopeConfig;
-    /**
      * @var CookieManagerInterface
      */
     private $cookieManager;
 
     /**
-     * \Magento\Store\Model\StoreManagerInterface $storeManager
-     *
+     * @param Config $config
      * @param HttpRequest $request
      * @param StoreManagerInterface $storeManager
-     * @param AppState $appState
-     * @param ScopeConfigInterface $scopeConfigInterface
      * @param CookieManagerInterface $cookieManager
      */
     public function __construct(
+        Config $config,
         HttpRequest $request,
         StoreManagerInterface $storeManager,
-        AppState $appState,
-        ScopeConfigInterface $scopeConfigInterface,
         CookieManagerInterface $cookieManager
     ) {
+        $this->config = $config;
         $this->request = $request;
         $this->storeManager = $storeManager;
-        $this->appState = $appState;
-        $this->scopeConfig = $scopeConfigInterface;
         $this->cookieManager = $cookieManager;
     }
 
@@ -88,13 +79,9 @@ class ResponsePlugin
      * @return bool
      * @throws LocalizedException
      */
-    protected function shouldAddLinkHeader(HttpResponse $response)
+    private function shouldAddLinkHeader(HttpResponse $response)
     {
-        if (!$this->scopeConfig->getValue('dev/debug/server_push', ScopeInterface::SCOPE_STORE)) {
-            return false;
-        }
-
-        if ($this->appState->getAreaCode() !== 'frontend') {
+        if (!$this->config->enabled()) {
             return false;
         }
 
@@ -110,8 +97,8 @@ class ResponsePlugin
             return false;
         }
 
-        if ($cookieValue = (int)$this->cookieManager->getCookie('serverpush')) {
-            if ($cookieValue === 1) {
+        if ($this->config->useCookie()) {
+            if ((int)$this->cookieManager->getCookie('serverpush') === 1) {
                 return false;
             }
         }
@@ -126,7 +113,7 @@ class ResponsePlugin
      *
      * @throws NoSuchEntityException
      */
-    protected function addLinkHeader(HttpResponse $response)
+    private function addLinkHeader(HttpResponse $response)
     {
         $values = [];
         $crawler = new Crawler($response->getContent());
@@ -171,7 +158,7 @@ class ResponsePlugin
      * @return string
      * @throws NoSuchEntityException
      */
-    protected function prepareLink(string $link): string
+    private function prepareLink(string $link): string
     {
         if (empty($link)) {
             return '';
