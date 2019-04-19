@@ -1,10 +1,16 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
-        <section id="dev">
-            <group id="debug">
-                <field id="server_push" translate="label" type="select" sortOrder="1" showInDefault="1">
-                    <label>Enable HTTP/2 Server Push</label>
+        <section id="system">
+            <group id="yireo_serverpush" translate="label" type="text" sortOrder="34" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Yireo ServerPush</label>
+                <field id="enabled" translate="label" type="select" sortOrder="1" showInDefault="1">
+                    <label>Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="use_cookie" translate="label" type="select" sortOrder="1" showInDefault="1">
+                    <label>Use Cookie</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Use a cookie to only load this feature on an initial request. Only needed if your reverse-proxy (Varnish) interprets the Link-header in a non-standard way.</comment>
                 </field>
             </group>
         </section>
