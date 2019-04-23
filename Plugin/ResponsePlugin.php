@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Yireo\ServerPush\Plugin;
+namespace Yireo\LinkPreload\Plugin;
 
 use Magento\Framework\Stdlib\CookieManagerInterface;
 use Magento\Framework\App\Request\Http as HttpRequest;
@@ -11,7 +11,7 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Model\StoreManagerInterface;
 use Symfony\Component\DomCrawler\Crawler;
-use Yireo\ServerPush\Config\Config;
+use Yireo\LinkPreload\Config\Config;
 
 /**
  * Plugin to add a Link header for each static asset
@@ -98,7 +98,7 @@ class ResponsePlugin
         }
 
         if ($this->config->useCookie()) {
-            if ((int)$this->cookieManager->getCookie('serverpush') === 1) {
+            if ((int)$this->cookieManager->getCookie('linkpreload') === 1) {
                 return false;
             }
         }

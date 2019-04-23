@@ -1,10 +1,10 @@
 {
-  "name": "yireo/magento2-serverpush",
+  "name": "yireo/magento2-linkpreload",
   "version": "1.1.0",
   "license": "OSL-3.0",
   "type": "magento2-module",
-  "homepage": "https://github.com/yireo/Yireo_ServerPush",
-  "description": "Magento 2 extension to set HTTP Link headers for primary resources to allow for HTTP/2 Server Push",
+  "homepage": "https://github.com/yireo/Yireo_LinkPreload",
+  "description": "Magento 2 extension to set HTTP Link headers for primary resources to allow for HTTP/2 preloading",
   "keywords": [
     "composer-installer",
     "magento"
@@ -27,7 +27,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Yireo\\ServerPush\\": ""
+      "Yireo\\LinkPreload\\": ""
     },
     "files": [
       "registration.php"

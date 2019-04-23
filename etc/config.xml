@@ -1,10 +1,11 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../Magento/Store/etc/config.xsd">
     <default>
-        <dev>
-            <debug>
-                <server_push>0</server_push>
-            </debug>
-        </dev>
+        <system>
+            <yireo_linkpreload>
+                <enabled>1</enabled>
+                <use_cookie>0</use_cookie>
+            </yireo_linkpreload>
+        </system>
     </default>
 </config>

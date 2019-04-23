@@ -4,5 +4,5 @@ define([
 ], function ($) {
     'use strict';
 
-    $.cookie('serverpush', 1);
+    $.cookie('linkpreload', 1);
 });

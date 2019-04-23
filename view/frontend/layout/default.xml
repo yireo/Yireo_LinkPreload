@@ -2,7 +2,7 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:View/Layout:etc/page_configuration.xsd">
     <body>
         <referenceBlock name="before.body.end">
-            <block class="Magento\Framework\View\Element\Template" name="serverpush" template="Yireo_ServerPush::script.phtml" ifconfig="system/yireo_serverpush/use_cookie"/>
+            <block class="Magento\Framework\View\Element\Template" name="linkpreload" template="Yireo_LinkPreload::script.phtml" ifconfig="system/yireo_linkpreload/use_cookie"/>
         </referenceBlock>
     </body>
 </page>

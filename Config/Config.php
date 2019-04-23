@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Yireo\ServerPush\Config;
+namespace Yireo\LinkPreload\Config;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
 
 /***
  * Class Config
- * @package Yireo\ServerPush\Config
+ * @package Yireo\LinkPreload\Config
  */
 class Config
 {
@@ -31,7 +31,7 @@ class Config
      */
     public function enabled(): bool
     {
-        return (bool)$this->scopeConfig->getValue('system/yireo_serverpush/enabled');
+        return (bool)$this->scopeConfig->getValue('system/yireo_linkpreload/enabled');
     }
 
     /**
@@ -39,6 +39,6 @@ class Config
      */
     public function useCookie(): bool
     {
-        return (bool)$this->scopeConfig->getValue('system/yireo_serverpush/use_cookie');
+        return (bool)$this->scopeConfig->getValue('system/yireo_linkpreload/use_cookie');
     }
 }
