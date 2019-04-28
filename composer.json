@@ -3,7 +3,7 @@
   "version": "1.2.0",
   "license": "OSL-3.0",
   "type": "magento2-module",
-  "homepage": "https://github.com/yireo/Yireo_LinkPreload",
+  "homepage": "https://www.yireo.com/software/magento-extensions/linkpreload",
   "description": "Magento 2 extension to set HTTP Link headers for primary resources to allow for HTTP/2 preloading",
   "keywords": [
     "composer-installer",

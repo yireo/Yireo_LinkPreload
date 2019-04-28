@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Yireo\Foobar\Test\Integration;
+namespace Yireo\LinkPreload\Test\Integration;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\Config\Scope;
 use Magento\TestFramework\TestCase\AbstractController;
+use Zend\Http\Header\HeaderInterface;
 
 class HeaderTest extends AbstractController
 {
@@ -20,7 +20,7 @@ class HeaderTest extends AbstractController
         $match = false;
         $foundHeaders = [];
         foreach ($headers as $header) {
-            /** @var $header \Zend\Http\Header\HeaderInterface */
+            /** @var $header HeaderInterface */
             if (preg_match('/^Link:/', $header->toString())) {
                 $foundHeaders[] = $header->toString();
                 $match = true;
@@ -33,7 +33,8 @@ class HeaderTest extends AbstractController
         $enabled = $scopeConfig->getValue('system/yireo_linkpreload/enabled');
         $this->assertEquals(1, $enabled);
 
-        $this->assertTrue($match, 'Expected a Link-header, but found only this: '.implode("; ", $foundHeaders));
+        $msg = 'Expected a Link-header, but found only this: ' . implode("; ", $foundHeaders);
+        $this->assertTrue($match, $msg);
     }
 
     /**
@@ -47,7 +48,7 @@ class HeaderTest extends AbstractController
         $match = false;
         $foundHeaders = [];
         foreach ($headers as $header) {
-            /** @var $header \Zend\Http\Header\HeaderInterface */
+            /** @var $header HeaderInterface */
             if (preg_match('/^Link:/', $header->toString())) {
                 $foundHeaders[] = $header->toString();
                 $match = true;
@@ -60,6 +61,7 @@ class HeaderTest extends AbstractController
         $enabled = $scopeConfig->getValue('system/yireo_linkpreload/enabled');
         $this->assertEquals(0, $enabled);
 
-        $this->assertFalse($match, 'Expected no Link-header, but found headers anyway: '.implode("; ", $foundHeaders));
+        $msg = 'Expected no Link-header, but found headers anyway: ' . implode("; ", $foundHeaders);
+        $this->assertFalse($match, $msg);
     }
 }
