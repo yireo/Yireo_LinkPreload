@@ -5,6 +5,7 @@
             <yireo_linkpreload>
                 <enabled>1</enabled>
                 <use_cookie>0</use_cookie>
+                <skip_images>1</skip_images>
             </yireo_linkpreload>
         </system>
     </default>
