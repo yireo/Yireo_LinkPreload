@@ -81,7 +81,7 @@ class ResponsePlugin
      */
     private function shouldAddLinkHeader(HttpResponse $response)
     {
-        if (!$this->config->enabled()) {
+        if ($this->config->enabled() === false) {
             return false;
         }
 
@@ -93,7 +93,7 @@ class ResponsePlugin
             return false;
         }
 
-        if (!$response->getContent()) {
+        if ($response->getContent() === false) {
             return false;
         }
 
@@ -137,11 +137,13 @@ class ResponsePlugin
         }
 
         // Find all images
-        $images = $crawler->filter('img[src]')->extract(['src']);
-        foreach ($images as $link) {
-            $link = $this->prepareLink($link);
-            if (!empty($link)) {
-                $values[] = "<" . $link . ">; rel=preload; as=image";
+        if ($this->config->skipImages() === false) {
+            $images = $crawler->filter('img[src]')->extract(['src']);
+            foreach ($images as $link) {
+                $link = $this->prepareLink($link);
+                if (!empty($link)) {
+                    $values[] = "<" . $link . ">; rel=preload; as=image";
+                }
             }
         }
 

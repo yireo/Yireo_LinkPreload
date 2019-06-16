@@ -12,6 +12,10 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment>Use a cookie to only load this feature on an initial request. Only needed if your reverse-proxy (Varnish) interprets the Link-header in a non-standard way.</comment>
                 </field>
+                <field id="skip_images" translate="label" type="select" sortOrder="1" showInDefault="1">
+                    <label>Skip Images</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
             </group>
         </section>
     </system>
