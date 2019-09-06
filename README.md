@@ -7,4 +7,4 @@ Note: This module was formally known as `Yireo_ServerPush` but the name gave a w
 ## See also:
 - [Installation](INSTALL.md)
 - [Usage](USAGE.md)
-- [Notes](NOTE.md)
+- [Notes](NOTES.md)
