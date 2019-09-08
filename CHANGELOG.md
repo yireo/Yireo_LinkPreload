@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.0] - 2019-09-08
+### Added
+- Add better detection of stylesheets (rel=stylesheet instead of as=style)
+- Add XML layout instructions for custom additional links to be set
+- Increase requirement for framework 102 or higher
+
 ## [1.3.0] - 2019-05-03
 ### Added
 - Add a flag "Skip Images" 

@@ -1,8 +1,18 @@
 <?xml version="1.0"?>
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:View/Layout:etc/page_configuration.xsd">
     <body>
+        <block name="link-preload">
+            <arguments>
+                <argument name="scripts" xsi:type="array">
+                    <item name="jquery" xsi:type="string">jquery.js</item>
+                    <item name="mage-dataPost" xsi:type="string">mage/dataPost.js</item>
+                    <item name="mage-bootstrap" xsi:type="string">mage/bootstrap.js</item>
+                </argument>
+            </arguments>
+        </block>
+
         <referenceBlock name="before.body.end">
-            <block class="Magento\Framework\View\Element\Template" name="linkpreload" template="Yireo_LinkPreload::script.phtml" ifconfig="system/yireo_linkpreload/use_cookie"/>
+            <block name="linkpreload" template="Yireo_LinkPreload::script.phtml" ifconfig="system/yireo_linkpreload/use_cookie"/>
         </referenceBlock>
     </body>
 </page>

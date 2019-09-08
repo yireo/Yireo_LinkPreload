@@ -4,6 +4,21 @@ Once the extension is installed, you will still need to enable it via **Store > 
 Once enabled, you should be able to see new `Link:` headers by debugging the HTTP headers of the HTML source of your Magento pages. This allows your browser to request for some initial CSS and JavaScript, once the HTML document has
 been received.
 
+# Optional XML layout configuration
+Optionally, you can add additional `scripts` via the XML layout, which is mostly useful for JavaScript loaded via RequireJS:
+```xml
+<referenceBlock name="link-preload">
+    <arguments>
+        <argument name="scripts" xsi:type="array">
+            <item name="my-script-name" xsi:type="string">my-script.js</item>
+        </argument>
+    </arguments>
+</referenceBlock>
+```
+
+Please note that RequireJS bundling has a similar effect and should be the preferred way to go.
+
+
 # Backgrounds
 With HTTP/2 a lot of cool things have been added to the web. However, for things to work really optimal a HTML document could mark additional resources (like CSS or JavaScript) with `Link` headers in the HTTP response. This extension simply adds these `Link` headers to the HTTP response, allowing your Magento 2 site to be loaded faster under HTTP/2.
 

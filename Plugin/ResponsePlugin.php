@@ -9,6 +9,9 @@ use Magento\Framework\App\Response\Http as HttpResponse;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Framework\View\Asset\Repository;
+use Magento\Framework\View\Element\Template;
+use Magento\Framework\View\LayoutInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Symfony\Component\DomCrawler\Crawler;
 use Yireo\LinkPreload\Config\Config;
@@ -39,21 +42,42 @@ class ResponsePlugin
     private $cookieManager;
 
     /**
+     * @var LayoutInterface
+     */
+    private $layout;
+
+    /**
+     * @var Repository
+     */
+    private $assetRepository;
+
+    /**
+     * @var array
+     */
+    private $values = [];
+
+    /**
      * @param Config $config
      * @param HttpRequest $request
      * @param StoreManagerInterface $storeManager
      * @param CookieManagerInterface $cookieManager
+     * @param LayoutInterface $layout
+     * @param Repository $assetRepository
      */
     public function __construct(
         Config $config,
         HttpRequest $request,
         StoreManagerInterface $storeManager,
-        CookieManagerInterface $cookieManager
+        CookieManagerInterface $cookieManager,
+        LayoutInterface $layout,
+        Repository $assetRepository
     ) {
         $this->config = $config;
         $this->request = $request;
         $this->storeManager = $storeManager;
         $this->cookieManager = $cookieManager;
+        $this->layout = $layout;
+        $this->assetRepository = $assetRepository;
     }
 
     /**
@@ -67,7 +91,9 @@ class ResponsePlugin
     public function beforeSendResponse(ResponseInterface $response)
     {
         if ($response instanceof HttpResponse && $this->shouldAddLinkHeader($response)) {
-            $this->addLinkHeader($response);
+            $this->addLinkHeadersFromResponse($response);
+            $this->addLinkHeadersFromLayout();
+            $this->processHeaders($response);
         }
     }
 
@@ -107,48 +133,129 @@ class ResponsePlugin
     }
 
     /**
+     * @param HttpResponse $response
+     */
+    private function processHeaders(HttpResponse $response)
+    {
+        if (!empty($this->values)) {
+            $response->setHeader('Link', implode(', ', $this->values));
+            $this->values = [];
+        }
+    }
+
+    /**
      * Add Link header to the response, based on the content
      *
      * @param HttpResponse $response
      *
      * @throws NoSuchEntityException
      */
-    private function addLinkHeader(HttpResponse $response)
+    private function addLinkHeadersFromResponse(HttpResponse $response)
     {
-        $values = [];
         $crawler = new Crawler($response->getContent());
 
         // Find all stylesheets
-        $stylesheets = $crawler->filter('link[as="style"]')->extract(['href']);
-        foreach ($stylesheets as $link) {
-            $link = $this->prepareLink($link);
-            if (!empty($link)) {
-                $values[] = "<" . $link . ">; rel=preload; as=style";
-            }
-        }
+        $stylesheets = $crawler->filter('link[rel="stylesheet"]')->extract(['href']);
+        $this->addStylesheetsAsLinkHeader($stylesheets);
 
         // Find all scripts
         $scripts = $crawler->filter('script[type="text/javascript"][src]')->extract(['src']);
-        foreach ($scripts as $link) {
-            $link = $this->prepareLink($link);
-            if (!empty($link)) {
-                $values[] = "<" . $link . ">; rel=preload; as=script";
-            }
-        }
+        $this->addScriptsAsLinkHeader($scripts);
 
         // Find all images
         if ($this->config->skipImages() === false) {
             $images = $crawler->filter('img[src]')->extract(['src']);
-            foreach ($images as $link) {
-                $link = $this->prepareLink($link);
-                if (!empty($link)) {
-                    $values[] = "<" . $link . ">; rel=preload; as=image";
-                }
-            }
+            $this->addImagesAsLinkHeader($images);
+        }
+    }
+
+    /**
+     * @param array $stylesheets
+     * @throws NoSuchEntityException
+     */
+    private function addStylesheetsAsLinkHeader(array $stylesheets)
+    {
+        foreach ($stylesheets as $stylesheet) {
+            $this->addStylesheetAsLinkHeader($stylesheet);
+        }
+    }
+
+    /**
+     * @param string $stylesheet
+     * @throws NoSuchEntityException
+     */
+    private function addStylesheetAsLinkHeader(string $stylesheet)
+    {
+        $stylesheet = $this->prepareLink($stylesheet);
+        if (empty($stylesheet)) {
+            return;
         }
 
-        if ($values) {
-            $response->setHeader('Link', implode(', ', $values));
+        $this->values[] = "<" . $stylesheet . ">; rel=preload; as=style";
+    }
+
+    /**
+     * @param array $scripts
+     * @throws NoSuchEntityException
+     */
+    private function addScriptsAsLinkHeader(array $scripts)
+    {
+        foreach ($scripts as $script) {
+            $this->addScriptAsLinkHeader($script);
+        }
+    }
+
+    /**
+     * @param string $script
+     * @throws NoSuchEntityException
+     */
+    private function addScriptAsLinkHeader(string $script)
+    {
+        $script = $this->prepareLink($script);
+        if (!empty($script)) {
+            $this->values[] = "<" . $script . ">; rel=preload; as=script";
+        }
+    }
+
+    /**
+     * @param array $images
+     * @throws NoSuchEntityException
+     */
+    private function addImagesAsLinkHeader(array $images)
+    {
+        foreach ($images as $image) {
+            $this->addImageAsLinkHeader($image);
+        }
+    }
+
+    /**
+     * @param array $images
+     * @throws NoSuchEntityException
+     */
+    private function addImageAsLinkHeader(string $image)
+    {
+        $image = $this->prepareLink($image);
+        if (!empty($image)) {
+            $this->values[] = "<" . $image . ">; rel=preload; as=image";
+        }
+    }
+
+    /**
+     * @throws NoSuchEntityException
+     */
+    private function addLinkHeadersFromLayout()
+    {
+        $block = $this->layout->getBlock('link-preload');
+        if (!$block instanceof Template) {
+            return;
+        }
+
+        $scripts = $block->getData('scripts');
+        if (!empty($scripts)) {
+            foreach ($scripts as $script) {
+                $script = $this->assetRepository->getUrlWithParams($script, []);
+                $this->addScriptAsLinkHeader($script);
+            }
         }
     }
 
