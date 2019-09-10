@@ -273,6 +273,11 @@ class ResponsePlugin
             return '';
         }
 
+        // Full urls
+        if (preg_match('/^(http|https):\/\//', $link) || preg_match('/^\/\//', $link)) {
+            return $link;
+        }
+
         // Absolute urls
         if ($link[0] === '/') {
             return $link;
