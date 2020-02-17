@@ -273,13 +273,19 @@ class ResponsePlugin
             return '';
         }
 
-        // Full urls
-        if (preg_match('/^(http|https):\/\//', $link) || preg_match('/^\/\//', $link)) {
-            return $link;
-        }
+        $baseUrl = $this->storeManager->getStore()->getBaseUrl();
 
         // Absolute urls
         if ($link[0] === '/') {
+            return $link;
+        }
+
+        // Full urls
+        if (preg_match('/^(http|https):\/\//', $link) || preg_match('/^\/\//', $link)) {
+            if (strstr($link, $baseUrl)) {
+                $link = '/' . ltrim(substr($link, strlen($baseUrl)), '/');
+            }
+
             return $link;
         }
 
