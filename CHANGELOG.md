@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.2] - 2020-02-17
+### Fixed
+- If link is full URL, try to turn it into absolute path
+
 ## [1.4.1] - 2019-09-10
 ### Fixed
 - Prevent HTTP/HTTPS URLs to be turned into static content URLs
