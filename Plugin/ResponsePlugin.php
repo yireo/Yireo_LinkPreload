@@ -176,22 +176,8 @@ class ResponsePlugin
     private function addStylesheetsAsLinkHeader(array $stylesheets)
     {
         foreach ($stylesheets as $stylesheet) {
-            $this->addStylesheetAsLinkHeader($stylesheet);
+            $this->addLink($stylesheet, 'style');
         }
-    }
-
-    /**
-     * @param string $stylesheet
-     * @throws NoSuchEntityException
-     */
-    private function addStylesheetAsLinkHeader(string $stylesheet)
-    {
-        $stylesheet = $this->prepareLink($stylesheet);
-        if (empty($stylesheet)) {
-            return;
-        }
-
-        $this->values[] = "<" . $stylesheet . ">; rel=preload; as=style";
     }
 
     /**
@@ -201,19 +187,7 @@ class ResponsePlugin
     private function addScriptsAsLinkHeader(array $scripts)
     {
         foreach ($scripts as $script) {
-            $this->addScriptAsLinkHeader($script);
-        }
-    }
-
-    /**
-     * @param string $script
-     * @throws NoSuchEntityException
-     */
-    private function addScriptAsLinkHeader(string $script)
-    {
-        $script = $this->prepareLink($script);
-        if (!empty($script)) {
-            $this->values[] = "<" . $script . ">; rel=preload; as=script";
+            $this->addLink($script, 'script');
         }
     }
 
@@ -224,19 +198,20 @@ class ResponsePlugin
     private function addImagesAsLinkHeader(array $images)
     {
         foreach ($images as $image) {
-            $this->addImageAsLinkHeader($image);
+            $this->addLink($image, 'image');
         }
     }
 
     /**
-     * @param array $images
+     * @param string $link
+     * @param string $type
      * @throws NoSuchEntityException
      */
-    private function addImageAsLinkHeader(string $image)
+    private function addLink(string $link, string $type)
     {
-        $image = $this->prepareLink($image);
-        if (!empty($image)) {
-            $this->values[] = "<" . $image . ">; rel=preload; as=image";
+        $link = $this->prepareLink($link);
+        if (!empty($link)) {
+            $this->values[] = "<" . $link . ">; rel=preload; as=" . $type;
         }
     }
 
@@ -250,11 +225,20 @@ class ResponsePlugin
             return;
         }
 
-        $scripts = $block->getData('scripts');
-        if (!empty($scripts)) {
-            foreach ($scripts as $script) {
-                $script = $this->assetRepository->getUrlWithParams($script, []);
-                $this->addScriptAsLinkHeader($script);
+        $types = [
+            'scripts' => 'script',
+            'fonts' => 'font',
+            'images' => 'image',
+            'styles' => 'style',
+        ];
+
+        foreach ($types as $typeBlock => $type) {
+            $links = $block->getData($typeBlock);
+            if (!empty($links)) {
+                foreach ($links as $link) {
+                    $link = $this->assetRepository->getUrlWithParams($link, []);
+                    $this->addLink($link, $type);
+                }
             }
         }
     }
