@@ -5,12 +5,21 @@ Once enabled, you should be able to see new `Link:` headers by debugging the HTT
 been received.
 
 # Optional XML layout configuration
-Optionally, you can add additional `scripts` via the XML layout, which is mostly useful for JavaScript loaded via RequireJS:
+Optionally, you can add additional links via the XML layout, which is mostly useful for JavaScript loaded via RequireJS, or webfonts loaded via css:
 ```xml
 <referenceBlock name="link-preload">
     <arguments>
         <argument name="scripts" xsi:type="array">
             <item name="my-script-name" xsi:type="string">my-script.js</item>
+        </argument>
+        <argument name="fonts" xsi:type="array">
+            <item name="my-font-name" xsi:type="string">my-font.woff2</item>
+        </argument>
+        <argument name="styles" xsi:type="array">
+            <item name="my-style-name" xsi:type="string">my-style.css</item>
+        </argument>
+        <argument name="images" xsi:type="array">
+            <item name="my-image-name" xsi:type="string">my-image.png</item>
         </argument>
     </arguments>
 </referenceBlock>
