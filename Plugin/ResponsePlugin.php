@@ -203,6 +203,8 @@ class ResponsePlugin
     }
 
     /**
+     * Construct link according to W3 specs, see https://www.w3.org/TR/preload/
+     *
      * @param string $link
      * @param string $type
      * @throws NoSuchEntityException
@@ -211,7 +213,17 @@ class ResponsePlugin
     {
         $link = $this->prepareLink($link);
         if (!empty($link)) {
-            $this->values[] = "<" . $link . ">; rel=preload; as=" . $type;
+            $newValue = [
+                '<' . $link . '>',
+                'rel=preload',
+                'as=' . $type,
+            ];
+
+            if ($type === 'font') {
+                $newValue[] = 'crossorigin=anonymous';
+            }
+
+            $this->values[] = implode('; ', $newValue);
         }
     }
 
