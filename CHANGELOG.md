@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.4] - 2020-06-12
+### Added
+- Construct link according to W3 specs, including crossorigin on fonts (@dimitri-koenig)
+
 ## [1.4.3] - 2020-06-03
 ### Added
 - Extends layout configuration with options for fonts, images and styles (@dimitri-koenig)
