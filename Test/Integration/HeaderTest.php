@@ -5,7 +5,7 @@ namespace Yireo\LinkPreload\Test\Integration;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\TestFramework\TestCase\AbstractController;
-use Zend\Http\Header\HeaderInterface;
+use Laminas\Http\Header\HeaderInterface;
 
 class HeaderTest extends AbstractController
 {
