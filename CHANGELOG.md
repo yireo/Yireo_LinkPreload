@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.5] - 2020-07-20
+### Added
+- Increase dep with symfony/css-selector
+
 ## [1.4.4] - 2020-06-12
 ### Added
 - Construct link according to W3 specs, including crossorigin on fonts (@dimitri-koenig)
