@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.6] - 29 July 2020
+### Added
+- Magento 2.4 support
+
 ## [1.4.5] - 2020-07-20
 ### Added
 - Increase dep with symfony/css-selector
