@@ -6,6 +6,7 @@ been received.
 
 # Optional XML layout configuration
 Optionally, you can add additional links via the XML layout, which is mostly useful for JavaScript loaded via RequireJS, or webfonts loaded via css:
+
 ```xml
 <referenceBlock name="link-preload">
     <arguments>
