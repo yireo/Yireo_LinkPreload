@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.7] - 7 January 2021
+### Added
+- Add preload-attributes to HTML as well
+
 ## [1.4.6] - 29 July 2020
 ### Added
 - Magento 2.4 support

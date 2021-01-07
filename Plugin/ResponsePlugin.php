@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Yireo\LinkPreload\Plugin;
@@ -94,6 +95,8 @@ class ResponsePlugin
             $this->addLinkHeadersFromResponse($response);
             $this->addLinkHeadersFromLayout();
             $this->processHeaders($response);
+            $this->processBody($response);
+            $this->reset();
         }
     }
 
@@ -137,10 +140,36 @@ class ResponsePlugin
      */
     private function processHeaders(HttpResponse $response)
     {
-        if (!empty($this->values)) {
-            $response->setHeader('Link', implode(', ', $this->values));
-            $this->values = [];
+        if (empty($this->values)) {
+            return;
         }
+
+        $response->setHeader('Link', implode(', ', $this->values));
+    }
+
+    /**
+     * @param HttpResponse $response
+     */
+    private function processBody(HttpResponse $response)
+    {
+        if (empty($this->values)) {
+            return;
+        }
+
+        $body = $response->getBody();
+        foreach ($this->values as $valueId => $value) {
+            $body = str_replace($valueId . '"', $valueId . '" rel="preload"', $body);
+        }
+
+        $response->setBody($body);
+    }
+
+    /**
+     * Reset the values again
+     */
+    private function reset()
+    {
+        $this->values = [];
     }
 
     /**
@@ -154,15 +183,12 @@ class ResponsePlugin
     {
         $crawler = new Crawler($response->getContent());
 
-        // Find all stylesheets
         $stylesheets = $crawler->filter('link[rel="stylesheet"]')->extract(['href']);
         $this->addStylesheetsAsLinkHeader($stylesheets);
 
-        // Find all scripts
         $scripts = $crawler->filter('script[type="text/javascript"][src]')->extract(['src']);
         $this->addScriptsAsLinkHeader($scripts);
 
-        // Find all images
         if ($this->config->skipImages() === false) {
             $images = $crawler->filter('img[src]')->extract(['src']);
             $this->addImagesAsLinkHeader($images);
@@ -212,19 +238,21 @@ class ResponsePlugin
     private function addLink(string $link, string $type)
     {
         $link = $this->prepareLink($link);
-        if (!empty($link)) {
-            $newValue = [
-                '<' . $link . '>',
-                'rel=preload',
-                'as=' . $type,
-            ];
-
-            if ($type === 'font') {
-                $newValue[] = 'crossorigin=anonymous';
-            }
-
-            $this->values[] = implode('; ', $newValue);
+        if (empty($link)) {
+            return;
         }
+
+        $newValue = [
+            '<' . $link . '>',
+            'rel=preload',
+            'as=' . $type,
+        ];
+
+        if ($type === 'font') {
+            $newValue[$link] = 'crossorigin=anonymous';
+        }
+
+        $this->values[$link] = implode('; ', $newValue);
     }
 
     /**
@@ -271,12 +299,10 @@ class ResponsePlugin
 
         $baseUrl = $this->storeManager->getStore()->getBaseUrl();
 
-        // Absolute urls
         if ($link[0] === '/') {
             return $link;
         }
 
-        // Full urls
         if (preg_match('/^(http|https):\/\//', $link) || preg_match('/^\/\//', $link)) {
             if (strstr($link, $baseUrl)) {
                 $link = '/' . ltrim(substr($link, strlen($baseUrl)), '/');
@@ -285,13 +311,11 @@ class ResponsePlugin
             return $link;
         }
 
-        // If it's not absolute, we only parse absolute urls
         $scheme = parse_url($link, PHP_URL_SCHEME);
         if (!in_array($scheme, ['http', 'https'])) {
             return '';
         }
 
-        // Replace the baseUrl to save some chars.
         $baseUrl = $this->storeManager->getStore()->getBaseUrl();
         if (strpos($link, $baseUrl) === 0) {
             $link = '/' . ltrim(substr($link, strlen($baseUrl)), '/');
