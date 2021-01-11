@@ -181,7 +181,7 @@ class ResponsePlugin
      */
     private function addLinkHeadersFromResponse(HttpResponse $response)
     {
-        $crawler = new Crawler($response->getContent());
+        $crawler = new Crawler((string) $response->getContent());
 
         $stylesheets = $crawler->filter('link[rel="stylesheet"]')->extract(['href']);
         $this->addStylesheetsAsLinkHeader($stylesheets);
