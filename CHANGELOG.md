@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.8] - 12 January 2021
+### Fixed
+- Cast response to string #26 (@barryvdh)
+
 ## [1.4.7] - 7 January 2021
 ### Added
 - Add preload-attributes to HTML as well
