@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.10] - 15 June 2021
+### Fixed
+- Forget to include XML file
+
+## [1.4.9] - 15 June 2021
+### Added
+- Added `hyva_default` XML layout handle for Hyva compatibility
+
 ## [1.4.8] - 12 January 2021
 ### Fixed
 - Cast response to string #26 (@barryvdh)

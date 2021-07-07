@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:View/Layout:etc/page_configuration.xsd">
+    <body>
+        <block name="link-preload">
+            <arguments>
+                <argument name="stylesheets" xsi:type="array">
+                    <item name="styles" xsi:type="string">css/styles.css</item>
+                </argument>
+            </arguments>
+        </block>
+    </body>
+</page>
