@@ -217,7 +217,7 @@ class LinkParser
             if (!empty($links)) {
                 foreach ($links as $link) {
                     $link = $this->assetRepository->getUrlWithParams($link, []);
-                    $this->addLink($link, $type);
+                    $this->addLink($link, $type, '');
                 }
             }
         }
