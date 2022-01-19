@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [1.4.13] - 19 January 2022
+### Fixed
+- Make sure title is only parsed once, fixing issues with SVGs
+
 ## [1.4.12] - 8 July 2021
 ### Fixed
 - Fix PHP Fatal Error with preconfigured assets from layout
