@@ -113,7 +113,7 @@ class LinkParser
             $newTags[] = '<link rel="preload" as="' . $link->getType() . '" href="' . $link->getUrl() . '" />';
         }
 
-        $body = str_replace('</title>', "</title>\n" . implode("\n", $newTags), $body);
+        $body = preg_replace('^</title>^',"</title>\n" . implode("\n", $newTags) , $body, 1);
         $response->setBody($body);
     }
 
