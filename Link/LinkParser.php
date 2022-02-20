@@ -110,7 +110,13 @@ class LinkParser
                 continue;
             }
 
-            $newTags[] = '<link rel="preload" as="' . $link->getType() . '" href="' . $link->getUrl() . '" />';
+            $createTag = '<link rel="preload" as="' . $link->getType() . '"';
+            if ($link->getType() === 'font') {
+                $createTag .= ' crossorigin="anonymous"';
+            }
+            $createTag .= ' href="' . $link->getUrl() . '" />';
+
+            $newTags[] = $createTag;
         }
 
         $body = preg_replace('^</title>^',"</title>\n" . implode("\n", $newTags) , $body, 1);
