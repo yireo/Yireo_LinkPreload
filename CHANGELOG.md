@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.15] - 31 March 2022
+### Fixed
+- Don't preload lazy loading images #36 (@Quazz)
+
 ## [1.4.14] - 20 February 2022
 ### Fixed
 - Missing crossorigin in html output (@mageho)
