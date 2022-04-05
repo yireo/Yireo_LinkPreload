@@ -179,7 +179,10 @@ class LinkParser
     private function addImagesAsLinkHeader(Crawler $crawler)
     {
         $crawler->each(function (Crawler $crawler) {
-            $this->addLink($crawler->extract(['src'])[0], 'image', $crawler->outerHtml());
+            $loadType = $crawler->extract(['loading']);
+            if (empty($loadType) || $loadType[0] !== "lazy") {
+                $this->addLink($crawler->extract(['src'])[0], 'image', $crawler->outerHtml());
+            }
         });
     }
 

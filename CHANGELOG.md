@@ -6,9 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.4.15] - 5 April 2022
+## [1.4.16] - 5 April 2022
 ### Fixed
 - Prevent LinkPreload module on non-HTML content
+
+## [1.4.15] - 31 March 2022
+### Fixed
+- Don't preload lazy loading images #36 (@Quazz)
 
 ## [1.4.14] - 20 February 2022
 ### Fixed
