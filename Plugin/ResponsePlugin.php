@@ -96,7 +96,12 @@ class ResponsePlugin
             return false;
         }
 
+        $content = $response->getContent();
         if ($response->getContent() === false) {
+            return false;
+        }
+
+        if (!stristr($content, '<!doctype html>')) {
             return false;
         }
 
