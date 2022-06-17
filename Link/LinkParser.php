@@ -142,7 +142,9 @@ class LinkParser
     {
         $crawler = new Crawler((string)$response->getContent());
 
-        $this->addStylesheetsAsLinkHeader($crawler->filter('link[rel="stylesheet"]'));
+        if (!$this->config->isCriticalEnabled()) {
+            $this->addStylesheetsAsLinkHeader($crawler->filter('link[rel="stylesheet"]'));
+        }
         $this->addScriptsAsLinkHeader($crawler->filter('script[type="text/javascript"][src]'));
 
         if ($this->config->skipImages() === false) {
