@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.17] - 18 June 2022
+### Fixed
+- Only preload CSS when critical CSS is disabled (@Quazz)
+
 ## [1.4.16] - 5 April 2022
 ### Fixed
 - Prevent LinkPreload module on non-HTML content
