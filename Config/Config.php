@@ -69,4 +69,12 @@ class Config
     {
         return (bool)$this->moduleList->has($module);
     }
+    
+    /**
+     * @return bool
+     */
+    public function isCriticalEnabled(): bool
+    {
+        return (bool)$this->scopeConfig->getValue('dev/css/use_css_critical_path');
+    }
 }
