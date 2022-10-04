@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.19] - 5 October 2022
+### Fixed
+- Added nopush to all preload links
+
 ## [1.4.18] - 26 June 2022
 ### Fixed
 - Loosen symfony/dom-crawler constraint #40 (@bramstroker)
