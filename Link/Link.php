@@ -64,6 +64,7 @@ class Link
             '<' . $this->getUrl() . '>',
             'rel=preload',
             'as=' . $this->getType(),
+            'nopush',
         ];
 
         if ($this->getType() === 'font') {
