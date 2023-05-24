@@ -101,7 +101,7 @@ class ResponsePlugin
             return false;
         }
 
-        if (!stristr($content, '<!doctype html>')) {
+        if (!stristr((string)$content, '<!doctype html>')) {
             return false;
         }
 
