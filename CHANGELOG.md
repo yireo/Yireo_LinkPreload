@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.21] - 26 May 2023
+### Fixed
+- Fix stringing of content (@MaximGns, #43)
+
 ## [1.4.20] - 10 May 2023
 ### Fixed
 - Add compatibility with Symfony 6

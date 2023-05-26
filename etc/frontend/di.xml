@@ -5,5 +5,4 @@
     <type name="Magento\Framework\App\ResponseInterface">
         <plugin name="linkpreload-response" type="Yireo\LinkPreload\Plugin\ResponsePlugin" sortOrder="99"/>
     </type>
-
 </config>
