@@ -21,6 +21,7 @@
     "symfony/dom-crawler": "^2.7|^3.0|^4.0|^5.0|^6.0",
     "symfony/css-selector": "^2.7|^3.0|^4.0|^5.0|^6.0",
     "php": "^7.4|^8.0|^8.1|^8.2",
+    "ext-dom": "*",
     "ext-pcre": "*"
   },
   "require-dev": {
