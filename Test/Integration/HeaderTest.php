@@ -2,11 +2,11 @@
 
 namespace Yireo\LinkPreload\Test\Integration;
 
+use Magento\Framework\App\Cache\Manager;
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\TestFramework\TestCase\AbstractController;
 use Laminas\Http\Header\HeaderInterface;
 
-class HeaderTest extends AbstractController
+class HeaderTest extends AbstractTestCase
 {
     /**
      * @magentoAdminConfigFixture system/yireo_linkpreload/enabled 1
@@ -16,19 +16,36 @@ class HeaderTest extends AbstractController
         $this->assertEnabledValue(1);
         $linkHeaders = $this->getLinkHeaders();
         $this->assertTrue(count($linkHeaders) > 0, 'No Link-headers found');
+        foreach ((new LinkDataProvider())->getLinks() as $link) {
+            $this->assertLinkHeadersContain($link[0], $link[1], $linkHeaders);
+        }
     }
 
     /**
      * @magentoAdminConfigFixture system/yireo_linkpreload/enabled 1
-     * @magentoCache all enabled
+     * @magentoCache full_page enabled
+     * @magentoDbIsolation enabled
+     * @magentoAppIsolation enabled
      */
     public function testIfLinkHeadersExistsWhenModuleIsEnabledAndWithFullPageCache()
     {
         $this->assertEnabledValue(1);
+
+        if (constant('TESTS_CLEANUP') === 'disabled') {
+            $this->markTestSkipped('Test does not work with TESTS_CLEANUP disabled');
+        }
+
+        //$this->markTestSkipped('Test does not work with TESTS_CLEANUP enabled');
+        $cache = $this->_objectManager->get(Manager::class);
+        $cache->clean(['full_page']);
+
         $this->getLinkHeaders();
         $this->getLinkHeaders();
+        $allHeaders = $this->getResponse()->getHeaders();
+        $this->assertTrue(count($allHeaders) > 0, 'No headers found: '.$allHeaders->toString());
+
         $linkHeaders = $this->getLinkHeaders();
-        $this->assertTrue(count($linkHeaders) > 0, 'No Link-headers found');
+        $this->assertTrue(count($linkHeaders) > 0, 'No Link-headers found: '.$this->getResponse()->getHeaders()->toString());
     }
 
     /**
@@ -93,15 +110,15 @@ class HeaderTest extends AbstractController
         }
     }
 
-    private function assertEnabledValue(int $expectedValue): void
+    private function assertLinkHeadersContain(string $type, string $uri, array $linkHeaders): void
     {
-        /** @var ScopeConfigInterface $scopeConfig */
-        $scopeConfig = $this->_objectManager->get(ScopeConfigInterface::class);
-        $this->assertEquals($expectedValue, $scopeConfig->getValue('system/yireo_linkpreload/enabled'));
-    }
+        $match = false;
+        foreach ($linkHeaders as $linkHeader) {
+            if (strstr($linkHeader, $uri)) {
+                $match = true;
+            }
+        }
 
-    private function reset(): void
-    {
-        $foundHeaders = [];
+        $this->assertTrue($match, 'Failed to find '.$type.' "'.$uri.'"');
     }
 }

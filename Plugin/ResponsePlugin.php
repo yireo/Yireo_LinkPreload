@@ -84,7 +84,7 @@ class ResponsePlugin
      */
     private function shouldAddLinkHeader(HttpResponse $response)
     {
-        if (!$this->config->enabled()) {
+        if (false === $this->config->enabled()) {
             return false;
         }
 
@@ -101,7 +101,7 @@ class ResponsePlugin
             return false;
         }
 
-        if (!stristr((string)$content, '<!doctype html>')) {
+        if (false === stristr((string)$content, '<!doctype html>')) {
             return false;
         }
 
