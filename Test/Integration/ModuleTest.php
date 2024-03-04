@@ -25,7 +25,7 @@ class ModuleTest extends TestCase
     public function testIfModuleIsKnownAndEnabled()
     {
         $objectManager = Bootstrap::getObjectManager();
-        $moduleList = $objectManager->create(ModuleList::class);
+        $moduleList = $objectManager->get(ModuleList::class);
         $this->assertTrue($moduleList->has('Yireo_LinkPreload'));
     }
 }
