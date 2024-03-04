@@ -2,9 +2,6 @@
 
 namespace Yireo\LinkPreload\Link;
 
-use DOMDocument;
-use Magento\Framework\Stdlib\CookieManagerInterface;
-use Magento\Framework\App\Request\Http as HttpRequest;
 use Magento\Framework\App\Response\Http as HttpResponse;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\View\Asset\Repository;
@@ -86,7 +83,7 @@ class LinkParser
 
         $links = [];
         foreach ($this->links as $link) {
-            $links[] = $link->getUrl();
+            $links[] = '<'.$link->getUrl().'>; rel="preload"';
         }
 
         $response->setHeader('Link', implode(', ', $links));
@@ -110,16 +107,16 @@ class LinkParser
                 continue;
             }
 
-            $createTag = '<link rel="preload" as="' . $link->getType() . '"';
+            $createTag = '<link rel="preload" as="'.$link->getType().'"';
             if ($link->getType() === 'font') {
                 $createTag .= ' crossorigin="anonymous"';
             }
-            $createTag .= ' href="' . $link->getUrl() . '" />';
+            $createTag .= ' href="'.$link->getUrl().'" />';
 
             $newTags[] = $createTag;
         }
 
-        $body = preg_replace('^</title>^',"</title>\n" . implode("\n", $newTags) , $body, 1);
+        $body = preg_replace('^</title>^', "</title>\n".implode("\n", $newTags), $body, 1);
         $response->setBody($body);
     }
 
@@ -145,6 +142,7 @@ class LinkParser
         if (!$this->config->isCriticalEnabled()) {
             $this->addStylesheetsAsLinkHeader($crawler->filter('link[rel="stylesheet"]'));
         }
+
         $this->addScriptsAsLinkHeader($crawler->filter('script[type="text/javascript"][src]'));
 
         if ($this->config->skipImages() === false) {
@@ -256,7 +254,7 @@ class LinkParser
 
         if (preg_match('/^(http|https):\/\//', $link) || preg_match('/^\/\//', $link)) {
             if (strstr($link, $baseUrl)) {
-                $link = '/' . ltrim(substr($link, strlen($baseUrl)), '/');
+                $link = '/'.ltrim(substr($link, strlen($baseUrl)), '/');
             }
 
             return $link;
@@ -269,7 +267,7 @@ class LinkParser
 
         $baseUrl = $this->storeManager->getStore()->getBaseUrl();
         if (strpos($link, $baseUrl) === 0) {
-            $link = '/' . ltrim(substr($link, strlen($baseUrl)), '/');
+            $link = '/'.ltrim(substr($link, strlen($baseUrl)), '/');
         }
 
         return $link;
