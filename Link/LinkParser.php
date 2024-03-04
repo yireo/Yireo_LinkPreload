@@ -83,7 +83,7 @@ class LinkParser
 
         $links = [];
         foreach ($this->links as $link) {
-            $links[] = '<'.$link->getUrl().'>; rel="preload"';
+            $links[] = '<'.$link->getUrl().'>; rel="preload"; as="'.$link->getType().'"';
         }
 
         $response->setHeader('Link', implode(', ', $links));

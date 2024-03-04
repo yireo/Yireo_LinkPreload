@@ -91,8 +91,17 @@ class HeaderTest extends AbstractController
         foreach ($linkParams as $linkParam) {
             $linkParam = explode('=', $linkParam);
             $this->assertEquals(2, count($linkParam));
-            $this->assertEquals('rel', trim($linkParam[0]));
-            $this->assertEquals('preload', str_replace('"', '', trim($linkParam[1])));
+            $linkParamName = trim($linkParam[0]);
+            $linkParamValue = str_replace('"', '', trim($linkParam[1]));
+            $this->assertContains($linkParamName, ['rel', 'as']);
+
+            if ($linkParamName === 'rel') {
+                $this->assertEquals('preload', $linkParamValue);
+            }
+
+            if ($linkParamName === 'as') {
+                $this->assertContains($linkParamValue, ['style', 'script', 'font']);
+            }
         }
     }
 }
