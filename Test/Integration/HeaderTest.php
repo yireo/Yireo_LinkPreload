@@ -10,6 +10,7 @@ use Magento\Framework\App\Response\Http;
 class HeaderTest extends AbstractTestCase
 {
     /**
+     * @magentoAppArea frontend
      * @magentoAdminConfigFixture system/yireo_linkpreload/enabled 1
      */
     public function testIfLinkHeadersExistsWhenModuleIsEnabled()
@@ -23,6 +24,7 @@ class HeaderTest extends AbstractTestCase
     }
 
     /**
+     * @magentoAppArea frontend
      * @magentoAdminConfigFixture system/yireo_linkpreload/enabled 1
      * @magentoCache full_page enabled
      * @magentoDbIsolation enabled
@@ -52,6 +54,7 @@ class HeaderTest extends AbstractTestCase
     }
 
     /**
+     * @magentoAppArea frontend
      * @magentoAdminConfigFixture system/yireo_linkpreload/enabled 0
      */
     public function testIfLinkHeadersExistsWhenModuleIsDisabled()

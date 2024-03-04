@@ -7,6 +7,7 @@ use Magento\Framework\App\Response\Http;
 class BodyTest extends AbstractTestCase
 {
     /**
+     * @magentoAppArea frontend
      * @magentoAdminConfigFixture system/yireo_linkpreload/enabled 1
      */
     public function testIfLinkHeadersExistsWhenModuleIsEnabled()
@@ -22,6 +23,7 @@ class BodyTest extends AbstractTestCase
     }
 
     /**
+     * @magentoAppArea frontend
      * @magentoAdminConfigFixture system/yireo_linkpreload/enabled 1
      * @magentoCache full_page enabled
      * @magentoDbIsolation enabled
