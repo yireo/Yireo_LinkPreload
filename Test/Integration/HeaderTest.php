@@ -5,6 +5,7 @@ namespace Yireo\LinkPreload\Test\Integration;
 use Magento\Framework\App\Cache\Manager;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Laminas\Http\Header\HeaderInterface;
+use Magento\Framework\App\Response\Http;
 
 class HeaderTest extends AbstractTestCase
 {
@@ -41,11 +42,13 @@ class HeaderTest extends AbstractTestCase
 
         $this->getLinkHeaders();
         $this->getLinkHeaders();
-        $allHeaders = $this->getResponse()->getHeaders();
+        /** @var Http $response */
+        $response = $this->getResponse();
+        $allHeaders = $response->getHeaders();
         $this->assertTrue(count($allHeaders) > 0, 'No headers found: '.$allHeaders->toString());
 
         $linkHeaders = $this->getLinkHeaders();
-        $this->assertTrue(count($linkHeaders) > 0, 'No Link-headers found: '.$this->getResponse()->getHeaders()->toString());
+        $this->assertTrue(count($linkHeaders) > 0, 'No Link-headers found: '.$allHeaders->toString());
     }
 
     /**
@@ -61,7 +64,9 @@ class HeaderTest extends AbstractTestCase
     private function getLinkHeaders(): array
     {
         $this->dispatch('/');
-        $headers = $this->getResponse()->getHeaders();
+        /** @var Http $response */
+        $response = $this->getResponse();
+        $headers = $response->getHeaders();
 
         $linkHeaders = [];
         foreach ($headers as $header) {

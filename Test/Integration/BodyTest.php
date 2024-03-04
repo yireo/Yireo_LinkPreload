@@ -2,6 +2,8 @@
 
 namespace Yireo\LinkPreload\Test\Integration;
 
+use Magento\Framework\App\Response\Http;
+
 class BodyTest extends AbstractTestCase
 {
     /**
@@ -11,7 +13,9 @@ class BodyTest extends AbstractTestCase
     {
         $this->assertEnabledValue(1);
         $this->dispatch('/');
-        $body = (string)$this->getResponse()->getBody();
+        /** @var Http $response */
+        $response = $this->getResponse();
+        $body = (string)$response->getBody();
         foreach ((new LinkDataProvider())->getLinks() as $link) {
             $this->assertBodyContainsLink($link[0], $link[1], $body);
         }
@@ -31,7 +35,9 @@ class BodyTest extends AbstractTestCase
 
         $this->assertEnabledValue(1);
         $this->dispatch('/');
-        $body = (string)$this->getResponse()->getBody();
+        /** @var Http $response */
+        $response = $this->getResponse();
+        $body = (string)$response->getBody();
         $this->assertNotEmpty($body);
 
         foreach ((new LinkDataProvider())->getLinks() as $link) {
