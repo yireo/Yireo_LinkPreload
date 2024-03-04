@@ -13,33 +13,22 @@ class HeaderTest extends AbstractController
      */
     public function testIfLinkHeadersExistsWhenModuleIsEnabled()
     {
-        $this->dispatch('/');
-        $headers = $this->getResponse()->getHeaders();
+        $this->assertEnabledValue(1);
+        $linkHeaders = $this->getLinkHeaders();
+        $this->assertTrue(count($linkHeaders) > 0, 'No Link-headers found');
+    }
 
-        $match = false;
-        $foundHeaders = [];
-        foreach ($headers as $header) {
-            /** @var $header HeaderInterface */
-            $foundHeaders[] = $header->toString();
-            if (preg_match('/^Link:/', $header->toString())) {
-                $this->assertValidLinkHeader($header->toString());
-                $match = true;
-                break;
-            }
-        }
-
-        /** @var ScopeConfigInterface $scopeConfig */
-        $scopeConfig = $this->_objectManager->get(ScopeConfigInterface::class);
-        $enabled = $scopeConfig->getValue('system/yireo_linkpreload/enabled');
-        $this->assertEquals(1, $enabled);
-
-        if (empty($foundHeaders)) {
-            $msg = 'No headers found';
-        } else {
-            $msg = 'Expected a Link-header, but found only this: ' . implode("; ", $foundHeaders);
-        }
-
-        $this->assertTrue($match, $msg);
+    /**
+     * @magentoAdminConfigFixture system/yireo_linkpreload/enabled 1
+     * @magentoCache all enabled
+     */
+    public function testIfLinkHeadersExistsWhenModuleIsEnabledAndWithFullPageCache()
+    {
+        $this->assertEnabledValue(1);
+        $this->getLinkHeaders();
+        $this->getLinkHeaders();
+        $linkHeaders = $this->getLinkHeaders();
+        $this->assertTrue(count($linkHeaders) > 0, 'No Link-headers found');
     }
 
     /**
@@ -47,29 +36,28 @@ class HeaderTest extends AbstractController
      */
     public function testIfLinkHeadersExistsWhenModuleIsDisabled()
     {
+        $this->assertEnabledValue(0);
+        $linkHeaders = $this->getLinkHeaders();
+        $this->assertFalse(count($linkHeaders) > 0, 'Expected no Link-header, but found headers anyway');
+    }
+
+    private function getLinkHeaders(): array
+    {
         $this->dispatch('/');
         $headers = $this->getResponse()->getHeaders();
 
-        $match = false;
-        $foundHeaders = [];
+        $linkHeaders = [];
         foreach ($headers as $header) {
             /** @var $header HeaderInterface */
             if (preg_match('/^Link:/', $header->toString())) {
-                $foundHeaders[] = $header->toString();
-                $match = true;
+                $this->assertValidLinkHeader($header->toString());
+                $linkHeaders[] = $header->toString();
                 break;
             }
         }
 
-        /** @var ScopeConfigInterface $scopeConfig */
-        $scopeConfig = $this->_objectManager->get(ScopeConfigInterface::class);
-        $enabled = $scopeConfig->getValue('system/yireo_linkpreload/enabled');
-        $this->assertEquals(0, $enabled);
-
-        $msg = 'Expected no Link-header, but found headers anyway: ' . implode("; ", $foundHeaders);
-        $this->assertFalse($match, $msg);
+        return $linkHeaders;
     }
-
 
     private function assertValidLinkHeader(string $linkHeader): void
     {
@@ -103,5 +91,17 @@ class HeaderTest extends AbstractController
                 $this->assertContains($linkParamValue, ['style', 'script', 'font']);
             }
         }
+    }
+
+    private function assertEnabledValue(int $expectedValue): void
+    {
+        /** @var ScopeConfigInterface $scopeConfig */
+        $scopeConfig = $this->_objectManager->get(ScopeConfigInterface::class);
+        $this->assertEquals($expectedValue, $scopeConfig->getValue('system/yireo_linkpreload/enabled'));
+    }
+
+    private function reset(): void
+    {
+        $foundHeaders = [];
     }
 }
