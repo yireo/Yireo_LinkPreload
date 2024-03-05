@@ -7,6 +7,7 @@ use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\View\Asset\Repository;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\LayoutInterface;
+use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use Symfony\Component\DomCrawler\Crawler;
 use Yireo\LinkPreload\Config\Config;
@@ -246,7 +247,9 @@ class LinkParser
             return '';
         }
 
-        $baseUrl = $this->storeManager->getStore()->getBaseUrl();
+        /** @var Store $store */
+        $store = $this->storeManager->getStore();
+        $baseUrl = $store->getBaseUrl();
 
         if ($link[0] === '/') {
             return $link;
@@ -265,7 +268,6 @@ class LinkParser
             return '';
         }
 
-        $baseUrl = $this->storeManager->getStore()->getBaseUrl();
         if (strpos($link, $baseUrl) === 0) {
             $link = '/'.ltrim(substr($link, strlen($baseUrl)), '/');
         }
