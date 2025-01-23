@@ -97,7 +97,7 @@ class ResponsePlugin
         }
 
         $content = $response->getContent();
-        if ($response->getContent() === false) {
+        if ($content === false) {
             return false;
         }
 

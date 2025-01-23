@@ -5,12 +5,14 @@ namespace Yireo\LinkPreload\Link;
 use Magento\Framework\App\Response\Http as HttpResponse;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\View\Asset\Repository;
+use Magento\Framework\View\Element\AbstractBlock;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\LayoutInterface;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use Symfony\Component\DomCrawler\Crawler;
 use Yireo\LinkPreload\Config\Config;
+use function Webmozart\Assert\Tests\StaticAnalysis\email;
 
 class LinkParser
 {
@@ -211,7 +213,7 @@ class LinkParser
     private function addLinkHeadersFromLayout()
     {
         $block = $this->layout->getBlock('link-preload');
-        if (!$block instanceof Template) {
+        if (false === $block instanceof AbstractBlock) {
             return;
         }
 
@@ -222,12 +224,12 @@ class LinkParser
             'styles' => 'style',
         ];
 
-        foreach ($types as $typeBlock => $type) {
-            $links = $block->getData($typeBlock);
+        foreach ($types as $argumentName => $linkType) {
+            $links = $block->getData($argumentName);
             if (!empty($links)) {
                 foreach ($links as $link) {
                     $link = $this->assetRepository->getUrlWithParams($link, []);
-                    $this->addLink($link, $type, '');
+                    $this->addLink($link, $linkType, '');
                 }
             }
         }

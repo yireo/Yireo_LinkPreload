@@ -3,7 +3,7 @@
     <body>
         <block name="link-preload">
             <arguments>
-                <argument name="stylesheets" xsi:type="array">
+                <argument name="styles" xsi:type="array">
                     <item name="styles" xsi:type="string">css/styles.css</item>
                 </argument>
             </arguments>
