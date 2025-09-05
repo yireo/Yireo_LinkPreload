@@ -140,7 +140,7 @@ class LinkParser
      */
     private function addLinkHeadersFromResponse(HttpResponse $response)
     {
-        $crawler = new Crawler((string)$response->getContent());
+        $crawler = new Crawler((string)$response->getContent(), useHtml5Parser: PHP_VERSION_ID >= 80400);
 
         if (!$this->config->isCriticalEnabled()) {
             $this->addStylesheetsAsLinkHeader($crawler->filter('link[rel="stylesheet"]'));
