@@ -142,7 +142,11 @@ class LinkParser
     private function addLinkHeadersFromResponse(HttpResponse $response)
     {
         $useHtml5Parser = PHP_VERSION_ID >= 80400 && version_compare(InstalledVersions::getVersion('symfony/dom-crawler'), '7.4') >= 0;
-        $crawler = new Crawler((string)$response->getContent(), useHtml5Parser: $useHtml5Parser);
+        try {
+            $crawler = new Crawler((string)$response->getContent(), useHtml5Parser: $useHtml5Parser);
+        } catch (\Throwable $e) {
+            return;
+        }
 
         if (!$this->config->isCriticalEnabled()) {
             $this->addStylesheetsAsLinkHeader($crawler->filter('link[rel="stylesheet"]'));
