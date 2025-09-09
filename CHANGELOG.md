@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.23] - 09 September 2025
+### Fixed
+- Check for symfony/dom-crawler 7.4 as thats the first version that uses PHP 8.4 parser.
+- Only use HTML5 based parser when PHP >= 8.4
+- Increase Symfony deps
+- Fix PHPStan issues
+
 ## [1.4.22] - 4 March 2024
 ### Fixed
 - Fix Link HTTP headers to be in right format
