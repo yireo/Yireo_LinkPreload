@@ -13,7 +13,6 @@ use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use Symfony\Component\DomCrawler\Crawler;
 use Yireo\LinkPreload\Config\Config;
-use function Webmozart\Assert\Tests\StaticAnalysis\email;
 
 class LinkParser
 {
