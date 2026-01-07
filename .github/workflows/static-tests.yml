@@ -1,0 +1,38 @@
+name: Magento 2 Static Tests
+on: ['push', 'pull_request']
+
+jobs:
+  static-tests:
+    name: Magento 2 Static Tests
+    #runs-on: self-hosted
+    runs-on: ubuntu-latest
+    container:
+        image: yireo/magento2installed:2.4.8-p3
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+
+      - name: Configure GitLab
+        run: |
+          test -n "${{ secrets.GITLAB_TOKEN }}" || exit 0
+          cd /tmp/magento
+          composer config --auth gitlab-token.gitlab.yireo.com ${{ secrets.GITLAB_TOKEN }}
+          composer config repositories.loki-checkout composer https://gitlab.yireo.com/api/v4/group/loki-checkout/-/packages/composer/packages.json
+
+      - name: Add module source
+        run: |
+          export COMPOSER_NAME=`cat .module.ini | grep COMPOSER_NAME | cut -f2 -d= | tr -d '"'`
+          cp -R ${GITHUB_WORKSPACE} /tmp/magento/package-source
+          cd /tmp/magento
+          composer config repositories.local-source path package-source/
+          composer config --no-plugins allow-plugins true
+          composer require --prefer-source -- ${COMPOSER_NAME}:@dev yireo/magento2-integration-test-helper
+          composer require --dev --prefer-source -- phpstan/phpstan bitexpert/phpstan-magento phpstan/extension-installer
+
+      - name: Run Magento 2 PHPStan Tests
+        run: |
+          export COMPOSER_NAME=`cat .module.ini | grep COMPOSER_NAME | cut -f2 -d= | tr -d '"'`
+          export LEVEL=$(jq -r '.phpstan_level // 1' MODULE.json)
+          test -f /tmp/magento/phpstan.neon || echo 'parameters:' > /tmp/magento/phpstan.neon
+          php -d memory_limit=4G /tmp/magento/vendor/bin/phpstan analyse --level $LEVEL ${GITHUB_WORKSPACE}
+
