@@ -30,6 +30,9 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v4
 
+      - name: Apply integration test patch for reporting memory under Alpine
+        run: cd /tmp/magento && curl -fsSL https://patch-diff.githubusercontent.com/raw/magento/magento2/pull/39216.diff | git apply
+
       #- name: Enable log_bin_trust_function_creators
       #  run: mysql -h mysql -uroot -proot -e "SET GLOBAL log_bin_trust_function_creators=1;"
 
