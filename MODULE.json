@@ -1,0 +1,35 @@
+{
+    "sequence": [
+        "Magento_Backend",
+        "Magento_Store"
+    ],
+    "modules": [
+        "Magento_Backend",
+        "Magento_Directory",
+        "Magento_Store",
+        "Magento_Theme"
+    ],
+    "components": [],
+    "config": [
+        {
+            "path": "system\/yireo_linkpreload\/enabled",
+            "label": "Yireo LinkPreload > Enabled",
+            "description": ""
+        },
+        {
+            "path": "system\/yireo_linkpreload\/use_cookie",
+            "label": "Yireo LinkPreload > Use Cookie",
+            "description": ""
+        },
+        {
+            "path": "system\/yireo_linkpreload\/skip_images",
+            "label": "Yireo LinkPreload > Skip Images",
+            "description": ""
+        }
+    ],
+    "tests": {
+        "unit": 0,
+        "integration": 7,
+        "functional": 0
+    }
+}
