@@ -34,5 +34,5 @@ jobs:
           export COMPOSER_NAME=`cat .module.ini | grep COMPOSER_NAME | cut -f2 -d= | tr -d '"'`
           export LEVEL=$(jq -r '.phpstan_level // 1' MODULE.json)
           test -f /tmp/magento/phpstan.neon || echo 'parameters:' > /tmp/magento/phpstan.neon
-          php -d memory_limit=4G /tmp/magento/vendor/bin/phpstan analyse --level $LEVEL ${GITHUB_WORKSPACE}
+          cd /tmp/magento && php -d memory_limit=4G ./vendor/bin/phpstan analyse --level $LEVEL ${GITHUB_WORKSPACE}
 
