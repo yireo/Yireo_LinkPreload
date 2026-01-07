@@ -10,7 +10,7 @@ jobs:
       image: yireo/magento2installed:2.4.8-p3
     services:
       mysql:
-        image: mysql:8.0
+        image: yireo/mariadb:10
         env:
           MYSQL_ROOT_PASSWORD: root
           MYSQL_USER: magento2
@@ -30,8 +30,8 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v4
 
-      - name: Enable log_bin_trust_function_creators
-        run: mysql -h mysql -uroot -proot -e "SET GLOBAL log_bin_trust_function_creators=1;"
+      #- name: Enable log_bin_trust_function_creators
+      #  run: mysql -h mysql -uroot -proot -e "SET GLOBAL log_bin_trust_function_creators=1;"
 
       - name: Configure GitLab
         run: |
