@@ -28,6 +28,24 @@ Optionally, you can add additional links via the XML layout, which is mostly use
 
 Please note that RequireJS bundling has a similar effect and should be the preferred way to go.
 
+# Removing values
+Sometimes a resource is automatically preloaded because it is referenced in the HTML document, while you actually do not want it to be preloaded. You can skip such a resource by setting its value in the XML layout to `false`:
+
+```xml
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceBlock name="link-preload">
+            <arguments>
+                <argument name="scripts" xsi:type="array">
+                    <item name="Loki_Flatpickr/css/flatpickr.min.css" xsi:type="boolean">false</item>
+                </argument>
+            </arguments>
+        </referenceBlock>
+    </body>
+</page>
+```
 
 # Backgrounds
 With HTTP/2 a lot of cool things have been added to the web. However, for things to work really optimal a HTML document could mark additional resources (like CSS or JavaScript) with `Link` headers in the HTTP response. This extension simply adds these `Link` headers to the HTTP response, allowing your Magento 2 site to be loaded faster under HTTP/2.

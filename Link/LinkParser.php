@@ -172,7 +172,8 @@ class LinkParser
                 return;
             }
 
-            $this->addLink($crawler->extract(['href'])[0], 'style', $crawler->outerHtml());
+            $link = $crawler->extract(['href'])[0];
+            $this->addLink($link, $link, 'style', $crawler->outerHtml());
         });
     }
 
@@ -191,7 +192,8 @@ class LinkParser
                 return;
             }
 
-            $this->addLink($crawler->extract(['src'])[0], 'script', $crawler->outerHtml());
+            $link = $crawler->extract(['src'])[0];
+            $this->addLink($link, $link, 'script', $crawler->outerHtml());
         });
     }
 
@@ -204,7 +206,8 @@ class LinkParser
         $crawler->each(function (Crawler $crawler) {
             $loadType = $crawler->extract(['loading']);
             if (empty($loadType) || $loadType[0] !== "lazy") {
-                $this->addLink($crawler->extract(['src'])[0], 'image', $crawler->outerHtml());
+                $link =$crawler->extract(['src'])[0];
+                $this->addLink($link, $link, 'image', $crawler->outerHtml());
             }
         });
     }
@@ -217,14 +220,23 @@ class LinkParser
      * @param string $originalTag
      * @throws NoSuchEntityException
      */
-    private function addLink(string $link, string $type, string $originalTag)
+    private function addLink(string $id, ?string $link, string $type, string $originalTag)
     {
-        $link = $this->prepareLink($link);
+        if ($link) {
+            $link = $this->prepareLink($link);
+        }
+
         if (empty($link)) {
+            foreach ($this->links as $key => $link) {
+                if (str_ends_with($link->getUrl(), $id)) {
+                    unset($this->links[$key]);
+                }
+            }
+
             return;
         }
 
-        $this->links[$link] = new Link($link, $type, $originalTag);
+        $this->links[$id] = new Link($link, $type, $originalTag);
     }
 
     /**
@@ -245,11 +257,16 @@ class LinkParser
         ];
 
         foreach ($types as $argumentName => $linkType) {
-            $links = $block->getData($argumentName);
+            $links = (array)$block->getData($argumentName);
             if (!empty($links)) {
-                foreach ($links as $link) {
+                foreach ($links as $linkId => $link) {
+                    if ($link === false) {
+                        $this->addLink($linkId, null, $linkType, '');
+                        continue;
+                    }
+
                     $link = $this->assetRepository->getUrlWithParams($link, []);
-                    $this->addLink($link, $linkType, '');
+                    $this->addLink($linkId, $link, $linkType, '');
                 }
             }
         }
