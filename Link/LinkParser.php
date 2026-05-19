@@ -139,7 +139,10 @@ class LinkParser
      */
     private function addLinkHeadersFromResponse(HttpResponse $response)
     {
-        $useHtml5Parser = PHP_VERSION_ID >= 80400 && version_compare(InstalledVersions::getVersion('symfony/dom-crawler'), '7.4') >= 0;
+        $useHtml5Parser = PHP_VERSION_ID >= 80400 && version_compare(
+                InstalledVersions::getVersion('symfony/dom-crawler'),
+                '7.4'
+            ) >= 0;
         try {
             $crawler = new Crawler((string)$response->getContent(), useHtml5Parser: $useHtml5Parser);
         } catch (\Throwable $e) {
@@ -164,6 +167,11 @@ class LinkParser
     private function addStylesheetsAsLinkHeader(Crawler $crawler)
     {
         $crawler->each(function (Crawler $crawler) {
+            $priority = $crawler->extract(['fetchpriority'])[0];
+            if ($priority && $priority != 'high') {
+                return;
+            }
+
             $this->addLink($crawler->extract(['href'])[0], 'style', $crawler->outerHtml());
         });
     }
@@ -175,6 +183,14 @@ class LinkParser
     private function addScriptsAsLinkHeader(Crawler $crawler)
     {
         $crawler->each(function (Crawler $crawler) {
+            if ($crawler->extract(['defer'])[0]) {
+                return;
+            }
+
+            if ($crawler->extract(['async'])[0]) {
+                return;
+            }
+
             $this->addLink($crawler->extract(['src'])[0], 'script', $crawler->outerHtml());
         });
     }
