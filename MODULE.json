@@ -1,10 +1,12 @@
 {
     "sequence": [
         "Magento_Backend",
+        "Magento_Config",
         "Magento_Store"
     ],
     "modules": [
         "Magento_Backend",
+        "Magento_Config",
         "Magento_Directory",
         "Magento_Store",
         "Magento_Theme"
@@ -33,5 +35,15 @@
         "functional": 0
     },
     "module_name": "Yireo_LinkPreload",
-    "composer_name": "yireo/magento2-linkpreload"
+    "composer_name": "yireo/magento2-linkpreload",
+    "php_versions": [
+        "8.1",
+        "8.2",
+        "8.3",
+        "8.4"
+    ],
+    "skip_magento_versions": [],
+    "skip_css_utils": false,
+    "phpcs_severity": 10,
+    "phpstan_level": 1
 }
