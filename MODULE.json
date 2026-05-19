@@ -12,17 +12,17 @@
     "components": [],
     "config": [
         {
-            "path": "system\/yireo_linkpreload\/enabled",
+            "path": "system/yireo_linkpreload/enabled",
             "label": "Yireo LinkPreload > Enabled",
             "description": ""
         },
         {
-            "path": "system\/yireo_linkpreload\/use_cookie",
+            "path": "system/yireo_linkpreload/use_cookie",
             "label": "Yireo LinkPreload > Use Cookie",
             "description": ""
         },
         {
-            "path": "system\/yireo_linkpreload\/skip_images",
+            "path": "system/yireo_linkpreload/skip_images",
             "label": "Yireo LinkPreload > Skip Images",
             "description": ""
         }
@@ -31,5 +31,7 @@
         "unit": 0,
         "integration": 7,
         "functional": 0
-    }
+    },
+    "module_name": "Yireo_LinkPreload",
+    "composer_name": "yireo/magento2-linkpreload"
 }
