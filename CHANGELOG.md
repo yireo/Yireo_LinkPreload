@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.25] - 19 May 2026
+### Fixed
+- Allow removing stylesheets from preload
+- Do not load preload deferred scripts or links with fetchpriority!=high
+
 ## [1.4.24] - 09 September 2025
 ### Fixed
 - Wrap Crawler in exception to prevent warning
