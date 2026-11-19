@@ -20,15 +20,35 @@ class Link
     private $originalHtml;
 
     /**
+     * @var string
+     */
+    private $integrity;
+
+    /**
+     * @var string
+     */
+    private $crossorigin;
+
+    /**
      * Link constructor.
      * @param string $url
      * @param string $type
      * @param string $originalHtml
+     * @param string $integrity
+     * @param string $crossorigin
      */
-    public function __construct(string $url, string $type, string $originalHtml) {
+    public function __construct(
+        string $url,
+        string $type,
+        string $originalHtml,
+        string $integrity = '',
+        string $crossorigin = ''
+    ) {
         $this->url = $url;
         $this->type = $type;
         $this->originalHtml = $originalHtml;
+        $this->integrity = $integrity;
+        $this->crossorigin = $crossorigin;
     }
 
     /**
@@ -53,6 +73,22 @@ class Link
     public function getOriginalHtml(): string
     {
         return $this->originalHtml;
+    }
+
+    /**
+     * @return string
+     */
+    public function getIntegrity(): string
+    {
+        return $this->integrity;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCrossorigin(): string
+    {
+        return $this->crossorigin;
     }
 
     /**
