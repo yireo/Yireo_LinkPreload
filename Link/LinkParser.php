@@ -113,7 +113,12 @@ class LinkParser
             if ($link->getType() === 'font') {
                 $createTag .= ' crossorigin="anonymous"';
             }
-            $createTag .= ' href="'.$link->getUrl().'" />';
+            $createTag .= ' href="'.$link->getUrl().'"';
+            if ($link->getIntegrity() !== '') {
+                $createTag .= ' integrity="'.htmlspecialchars($link->getIntegrity(), ENT_QUOTES).'"';
+                $createTag .= ' crossorigin="'.htmlspecialchars($link->getCrossorigin() ?: 'anonymous', ENT_QUOTES).'"';
+            }
+            $createTag .= ' />';
 
             $newTags[] = $createTag;
         }
@@ -192,8 +197,8 @@ class LinkParser
                 return;
             }
 
-            $link = $crawler->extract(['src'])[0];
-            $this->addLink($link, $link, 'script', $crawler->outerHtml());
+            [$link, $integrity, $crossorigin] = $crawler->extract(['src', 'integrity', 'crossorigin'])[0];
+            $this->addLink($link, $link, 'script', $crawler->outerHtml(), (string)$integrity, (string)$crossorigin);
         });
     }
 
@@ -218,9 +223,18 @@ class LinkParser
      * @param string $link
      * @param string $type
      * @param string $originalTag
+     * @param string $integrity
+     * @param string $crossorigin
      * @throws NoSuchEntityException
      */
-    private function addLink(string $id, ?string $link, string $type, string $originalTag)
+    private function addLink(
+        string $id,
+        ?string $link,
+        string $type,
+        string $originalTag,
+        string $integrity = '',
+        string $crossorigin = ''
+    )
     {
         if ($link) {
             $link = $this->prepareLink($link);
@@ -236,7 +250,7 @@ class LinkParser
             return;
         }
 
-        $this->links[$id] = new Link($link, $type, $originalTag);
+        $this->links[$id] = new Link($link, $type, $originalTag, $integrity, $crossorigin);
     }
 
     /**
