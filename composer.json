@@ -22,7 +22,7 @@
         "magento/module-config": "^100.0|^101.0",
         "magento/module-store": "^100.0|^101.0",
         "php": ">=8.2 <8.6",
-        "symfony/dom-crawler": "^2.7|^3.0|^4.0|^5.0|^6.0|^7.0"
+        "symfony/dom-crawler": "^6.4.40|^7.4.12|^8.0.12"
     },
     "require-dev": {
         "phpunit/phpunit": "^10.5"
