@@ -85,7 +85,12 @@ class LinkParser
 
         $links = [];
         foreach ($this->links as $link) {
-            $links[] = '<'.$link->getUrl().'>; rel="preload"; as="'.$link->getType().'"';
+            $header = '<'.$link->getUrl().'>; rel="preload"; as="'.$link->getType().'"';
+            if ($link->getCrossorigin() !== '') {
+                $header .= '; crossorigin="'.$link->getCrossorigin().'"';
+            }
+
+            $links[] = $header;
         }
 
         $response->setHeader('Link', implode(', ', $links));
@@ -113,11 +118,15 @@ class LinkParser
             if ($link->getType() === 'font') {
                 $createTag .= ' crossorigin="anonymous"';
             }
-            $createTag .= ' href="'.$link->getUrl().'"';
+            $createTag .= ' href="'.htmlspecialchars($link->getUrl(), ENT_QUOTES).'"';
             if ($link->getIntegrity() !== '') {
                 $createTag .= ' integrity="'.htmlspecialchars($link->getIntegrity(), ENT_QUOTES).'"';
-                $createTag .= ' crossorigin="'.htmlspecialchars($link->getCrossorigin() ?: 'anonymous', ENT_QUOTES).'"';
             }
+
+            if ($link->getCrossorigin() !== '') {
+                $createTag .= ' crossorigin="'.$link->getCrossorigin().'"';
+            }
+
             $createTag .= ' />';
 
             $newTags[] = $createTag;
@@ -189,17 +198,37 @@ class LinkParser
     private function addScriptsAsLinkHeader(Crawler $crawler)
     {
         $crawler->each(function (Crawler $crawler) {
-            if ($crawler->extract(['defer'])[0]) {
+            $node = $crawler->getNode(0);
+            if ($node instanceof \DOMElement && ($node->hasAttribute('defer') || $node->hasAttribute('async'))) {
                 return;
             }
 
-            if ($crawler->extract(['async'])[0]) {
-                return;
-            }
-
-            [$link, $integrity, $crossorigin] = $crawler->extract(['src', 'integrity', 'crossorigin'])[0];
-            $this->addLink($link, $link, 'script', $crawler->outerHtml(), (string)$integrity, (string)$crossorigin);
+            [$link, $integrity] = $crawler->extract(['src', 'integrity'])[0];
+            $integrity = (string)$integrity;
+            $crossorigin = $this->getCrossorigin($crawler, $integrity !== '');
+            $this->addLink($link, $link, 'script', $crawler->outerHtml(), $integrity, $crossorigin);
         });
+    }
+
+    /**
+     * Return the CORS mode of the element, limited to the values allowed for a preload
+     *
+     * @param Crawler $crawler
+     * @param bool $required
+     * @return string
+     */
+    private function getCrossorigin(Crawler $crawler, bool $required): string
+    {
+        $node = $crawler->getNode(0);
+        if (!$node instanceof \DOMElement || !$node->hasAttribute('crossorigin')) {
+            return $required ? 'anonymous' : '';
+        }
+
+        if (strtolower(trim($node->getAttribute('crossorigin'))) === 'use-credentials') {
+            return 'use-credentials';
+        }
+
+        return 'anonymous';
     }
 
     /**
@@ -234,8 +263,7 @@ class LinkParser
         string $originalTag,
         string $integrity = '',
         string $crossorigin = ''
-    )
-    {
+    ) {
         if ($link) {
             $link = $this->prepareLink($link);
         }
