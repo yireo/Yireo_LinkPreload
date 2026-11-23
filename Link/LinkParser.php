@@ -224,7 +224,7 @@ class LinkParser
             return $required ? 'anonymous' : '';
         }
 
-        if (strtolower(trim($node->getAttribute('crossorigin'))) === 'use-credentials') {
+        if (strtolower(trim($node->getAttribute('crossorigin'), " \f\n\r\t\v\0")) === 'use-credentials') {
             return 'use-credentials';
         }
 
