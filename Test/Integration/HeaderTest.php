@@ -106,7 +106,11 @@ class HeaderTest extends AbstractTestCase
             $this->assertEquals(2, count($linkParam));
             $linkParamName = trim($linkParam[0]);
             $linkParamValue = str_replace('"', '', trim($linkParam[1]));
-            $this->assertContains($linkParamName, ['rel', 'as']);
+            $this->assertContains($linkParamName, ['rel', 'as', 'crossorigin']);
+
+            if ($linkParamName === 'crossorigin') {
+                $this->assertContains($linkParamValue, ['anonymous', 'use-credentials']);
+            }
 
             if ($linkParamName === 'rel') {
                 $this->assertEquals('preload', $linkParamValue);
