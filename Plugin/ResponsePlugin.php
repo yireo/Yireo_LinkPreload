@@ -8,6 +8,7 @@ use Magento\Framework\App\Response\Http as HttpResponse;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
+use Psr\Log\LoggerInterface;
 use Yireo\LinkPreload\Config\Config;
 use Yireo\LinkPreload\Link\LinkParser;
 
@@ -37,21 +38,29 @@ class ResponsePlugin
     private $linkParser;
 
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
      * @param Config $config
      * @param HttpRequest $request
      * @param CookieManagerInterface $cookieManager
      * @param LinkParser $linkParser
+     * @param LoggerInterface $logger
      */
     public function __construct(
         Config $config,
         HttpRequest $request,
         CookieManagerInterface $cookieManager,
-        LinkParser $linkParser
+        LinkParser $linkParser,
+        LoggerInterface $logger
     ) {
         $this->config = $config;
         $this->request = $request;
         $this->cookieManager = $cookieManager;
         $this->linkParser = $linkParser;
+        $this->logger = $logger;
     }
 
     /**
@@ -72,7 +81,11 @@ class ResponsePlugin
             return;
         }
 
-        $this->linkParser->parse($response);
+        try {
+            $this->linkParser->parse($response);
+        } catch (\Throwable $exception) {
+            $this->logger->error('Yireo_LinkPreload: '.$exception->getMessage(), ['exception' => $exception]);
+        }
     }
 
     /**
@@ -101,7 +114,11 @@ class ResponsePlugin
             return false;
         }
 
-        if (false === stristr((string)$content, '<!doctype html>')) {
+        if (false === $this->isHtmlContentType($response)) {
+            return false;
+        }
+
+        if (false === $this->isHtmlDocument((string)$content)) {
             return false;
         }
 
@@ -112,5 +129,37 @@ class ResponsePlugin
         }
 
         return true;
+    }
+
+    /**
+     * @param HttpResponse $response
+     * @return bool
+     */
+    private function isHtmlContentType(HttpResponse $response): bool
+    {
+        $header = $response->getHeader('Content-Type');
+        if (!$header) {
+            return true;
+        }
+
+        $contentType = $header instanceof \ArrayIterator ? $header->current() : $header;
+        $value = strtolower(trim((string)$contentType->getFieldValue(), " \f\n\r\t\v\0"));
+
+        return $value === '' || str_starts_with($value, 'text/html');
+    }
+
+    /**
+     * @param string $content
+     * @return bool
+     */
+    private function isHtmlDocument(string $content): bool
+    {
+        if (str_starts_with($content, "\xEF\xBB\xBF")) {
+            $content = substr($content, 3);
+        }
+
+        $content = ltrim($content, " \f\n\r\t\v\0");
+
+        return 0 === stripos($content, '<!doctype html');
     }
 }

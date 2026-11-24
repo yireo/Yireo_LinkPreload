@@ -22,9 +22,11 @@
         "magento/module-config": "^100.0|^101.0",
         "magento/module-store": "^100.0|^101.0",
         "php": ">=8.2 <8.6",
+        "psr/log": "^1.0 || ^2.0 || ^3.0",
         "symfony/dom-crawler": "^6.4.40|^7.4.12|^8.0.12"
     },
     "require-dev": {
+        "ext-json": "*",
         "phpunit/phpunit": "^10.5"
     },
     "autoload": {
