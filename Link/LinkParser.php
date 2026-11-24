@@ -15,6 +15,14 @@ use Yireo\LinkPreload\Config\Config;
 
 class LinkParser
 {
+    private const MAX_BODY_SIZE = 2097152;
+
+    private const TYPE_PRIORITIES = [
+        'style' => 1,
+        'script' => 2,
+        'image' => 3,
+    ];
+
     /**
      * @var Config
      */
@@ -83,17 +91,70 @@ class LinkParser
             return;
         }
 
-        $links = [];
-        foreach ($this->links as $link) {
-            $header = '<'.$link->getUrl().'>; rel="preload"; as="'.$link->getType().'"';
-            if ($link->getCrossorigin() !== '') {
-                $header .= '; crossorigin="'.$link->getCrossorigin().'"';
+        $maxLinks = $this->config->getMaxLinks();
+        $maxLength = $this->config->getMaxHeaderLength();
+        $entries = [];
+        $length = 0;
+
+        foreach ($this->getPrioritizedLinks() as $link) {
+            if ($maxLinks > 0 && count($entries) >= $maxLinks) {
+                break;
             }
 
-            $links[] = $header;
+            $entry = '<'.$this->formatHeaderUrl($link->getUrl()).'>; rel="preload"; as="'.$link->getType().'"';
+            if ($link->getCrossorigin() !== '') {
+                $entry .= '; crossorigin="'.$link->getCrossorigin().'"';
+            }
+
+            $newLength = $length + strlen($entry) + (empty($entries) ? 0 : 2);
+            if ($maxLength > 0 && $newLength > $maxLength) {
+                break;
+            }
+
+            $entries[] = $entry;
+            $length = $newLength;
         }
 
-        $response->setHeader('Link', implode(', ', $links));
+        if (empty($entries)) {
+            return;
+        }
+
+        $response->setHeader('Link', implode(', ', $entries), true);
+    }
+
+    /**
+     * @return Link[]
+     */
+    private function getPrioritizedLinks(): array
+    {
+        $links = array_values($this->links);
+        usort($links, function (Link $a, Link $b) {
+            return $this->getPriority($a) <=> $this->getPriority($b);
+        });
+
+        return $links;
+    }
+
+    /**
+     * @param Link $link
+     * @return int
+     */
+    private function getPriority(Link $link): int
+    {
+        if ($link->getOriginalHtml() === '') {
+            return 0;
+        }
+
+        return self::TYPE_PRIORITIES[$link->getType()] ?? 4;
+    }
+
+    /**
+     * @param string $url
+     * @return string
+     */
+    private function formatHeaderUrl(string $url): string
+    {
+        return str_replace([',', ';'], ['%2C', '%3B'], $url);
     }
 
     /**
@@ -132,8 +193,43 @@ class LinkParser
             $newTags[] = $createTag;
         }
 
-        $body = preg_replace('^</title>^', "</title>\n".implode("\n", $newTags), $body, 1);
-        $response->setBody($body);
+        if (empty($newTags)) {
+            return;
+        }
+
+        $body = (string)$body;
+        $position = $this->getInsertPosition($body);
+        if ($position === null) {
+            return;
+        }
+
+        $response->setBody(substr_replace($body, "\n".implode("\n", $newTags), $position, 0));
+    }
+
+    /**
+     * Find the position within the HTML head where to insert new tags
+     *
+     * @param string $body
+     * @return int|null
+     */
+    private function getInsertPosition(string $body): ?int
+    {
+        $headEnd = stripos($body, '</head>');
+        if ($headEnd === false) {
+            return null;
+        }
+
+        $titleEnd = stripos($body, '</title>');
+        if ($titleEnd !== false && $titleEnd < $headEnd) {
+            return $titleEnd + strlen('</title>');
+        }
+
+        if (preg_match('/<head(\s[^>]*)?>/i', $body, $matches, PREG_OFFSET_CAPTURE)
+            && $matches[0][1] < $headEnd) {
+            return $matches[0][1] + strlen($matches[0][0]);
+        }
+
+        return null;
     }
 
     /**
@@ -153,12 +249,13 @@ class LinkParser
      */
     private function addLinkHeadersFromResponse(HttpResponse $response)
     {
-        $useHtml5Parser = PHP_VERSION_ID >= 80400 && version_compare(
-                InstalledVersions::getVersion('symfony/dom-crawler'),
-                '7.4'
-            ) >= 0;
+        $content = (string)$response->getContent();
+        if (strlen($content) > self::MAX_BODY_SIZE) {
+            return;
+        }
+
         try {
-            $crawler = new Crawler((string)$response->getContent(), useHtml5Parser: $useHtml5Parser);
+            $crawler = new Crawler($content, useHtml5Parser: $this->useHtml5Parser());
         } catch (\Throwable $e) {
             return;
         }
@@ -172,6 +269,24 @@ class LinkParser
         if ($this->config->skipImages() === false) {
             $this->addImagesAsLinkHeader($crawler->filter('img[src]'));
         }
+    }
+
+    /**
+     * @return bool
+     */
+    private function useHtml5Parser(): bool
+    {
+        if (PHP_VERSION_ID < 80400) {
+            return false;
+        }
+
+        try {
+            $version = InstalledVersions::getVersion('symfony/dom-crawler');
+        } catch (\OutOfBoundsException $e) {
+            return false;
+        }
+
+        return $version !== null && version_compare($version, '7.4', '>=');
     }
 
     /**
@@ -264,21 +379,36 @@ class LinkParser
         string $integrity = '',
         string $crossorigin = ''
     ) {
-        if ($link) {
-            $link = $this->prepareLink($link);
+        if ($link === null) {
+            $this->removeLinks($id);
+            return;
         }
 
-        if (empty($link)) {
-            foreach ($this->links as $key => $link) {
-                if (str_ends_with($link->getUrl(), $id)) {
-                    unset($this->links[$key]);
-                }
-            }
-
+        $link = $this->prepareLink($link);
+        if ($link === '') {
             return;
         }
 
         $this->links[$id] = new Link($link, $type, $originalTag, $integrity, $crossorigin);
+    }
+
+    /**
+     * Remove links by ID or by the end of their URL
+     *
+     * @param string $id
+     */
+    private function removeLinks(string $id)
+    {
+        if ($id === '') {
+            return;
+        }
+
+        unset($this->links[$id]);
+        foreach ($this->links as $key => $existingLink) {
+            if (str_ends_with($existingLink->getUrl(), $id)) {
+                unset($this->links[$key]);
+            }
+        }
     }
 
     /**
@@ -324,9 +454,13 @@ class LinkParser
      */
     private function prepareLink(string $link): string
     {
-        if (empty($link)) {
+        if (empty($link) || preg_match('/[\x00-\x20\x7F<>"\']/', $link)) {
             return '';
         }
+
+        $link = (string)preg_replace_callback('/[\x80-\xFF]/', function (array $matches) {
+            return rawurlencode($matches[0]);
+        }, $link);
 
         /** @var Store $store */
         $store = $this->storeManager->getStore();
@@ -337,7 +471,7 @@ class LinkParser
         }
 
         if (preg_match('/^(http|https):\/\//', $link) || preg_match('/^\/\//', $link)) {
-            if (strstr($link, $baseUrl)) {
+            if (str_starts_with($link, $baseUrl)) {
                 $link = '/'.ltrim(substr($link, strlen($baseUrl)), '/');
             }
 

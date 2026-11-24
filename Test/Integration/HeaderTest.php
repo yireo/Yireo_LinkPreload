@@ -73,7 +73,7 @@ class HeaderTest extends AbstractTestCase
 
         $linkHeaders = [];
         foreach ($headers as $header) {
-            /** @var $header HeaderInterface */
+            /** @var HeaderInterface $header */
             if (preg_match('/^Link:/', $header->toString())) {
                 $this->assertValidLinkHeader($header->toString());
                 $linkHeaders[] = $header->toString();
