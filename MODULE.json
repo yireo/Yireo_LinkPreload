@@ -27,6 +27,16 @@
             "path": "system/yireo_linkpreload/skip_images",
             "label": "Yireo LinkPreload > Skip Images",
             "description": ""
+        },
+        {
+            "path": "system/yireo_linkpreload/max_links",
+            "label": "Yireo LinkPreload > Maximum Links",
+            "description": ""
+        },
+        {
+            "path": "system/yireo_linkpreload/max_header_length",
+            "label": "Yireo LinkPreload > Maximum Header Length",
+            "description": ""
         }
     ],
     "tests": {
