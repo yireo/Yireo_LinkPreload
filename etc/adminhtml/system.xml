@@ -16,6 +16,16 @@
                     <label>Skip Images</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
+                <field id="max_links" translate="label comment" type="text" sortOrder="2" showInDefault="1">
+                    <label>Maximum Links</label>
+                    <validate>validate-digits</validate>
+                    <comment>Maximum number of resources added to the Link header. Use 0 for unlimited.</comment>
+                </field>
+                <field id="max_header_length" translate="label comment" type="text" sortOrder="3" showInDefault="1">
+                    <label>Maximum Header Length</label>
+                    <validate>validate-digits</validate>
+                    <comment>Maximum length in bytes of the Link header. Use 0 for unlimited.</comment>
+                </field>
             </group>
         </section>
     </system>

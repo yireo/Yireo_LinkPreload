@@ -33,6 +33,8 @@ Once the extension is installed, you will still need to enable it via **Store > 
 
 Once enabled, you should be able to see new `Link:` headers by debugging the HTTP headers of the HTML source of your Magento pages. This allows your browser to request for some initial CSS and JavaScript, once the HTML document has been received.
 
+Only HTML documents (a `text/html` response starting with `<!doctype html>`) are processed. To keep the `Link` header within the limits of proxies like nginx and Varnish, the options **Maximum Links** (default `30`) and **Maximum Header Length** (default `4096` bytes) limit the header. Use `0` for unlimited. Resources from the XML layout get priority, followed by stylesheets, scripts and images.
+
 ### Optional XML layout configuration
 Optionally, you can add additional links via the XML layout, which is mostly useful for JavaScript loaded via RequireJS, or webfonts loaded via css:
 

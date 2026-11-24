@@ -77,4 +77,20 @@ class Config
     {
         return (bool)$this->scopeConfig->getValue('dev/css/use_css_critical_path');
     }
+
+    /**
+     * @return int
+     */
+    public function getMaxLinks(): int
+    {
+        return max(0, (int)$this->scopeConfig->getValue('system/yireo_linkpreload/max_links'));
+    }
+
+    /**
+     * @return int
+     */
+    public function getMaxHeaderLength(): int
+    {
+        return max(0, (int)$this->scopeConfig->getValue('system/yireo_linkpreload/max_header_length'));
+    }
 }

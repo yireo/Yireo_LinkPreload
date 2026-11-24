@@ -6,6 +6,8 @@
                 <enabled>1</enabled>
                 <use_cookie>0</use_cookie>
                 <skip_images>1</skip_images>
+                <max_links>30</max_links>
+                <max_header_length>4096</max_header_length>
             </yireo_linkpreload>
         </system>
     </default>
