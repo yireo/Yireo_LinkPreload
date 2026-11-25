@@ -95,17 +95,17 @@ class HeaderTest extends AbstractTestCase
 
     private function assertValidLink(string $link): void
     {
-        $link = trim($link);
+        $link = trim($link, " \f\n\r\t\v\x00");
         $linkParams = explode(';', $link);
-        $linkUri = trim(array_shift($linkParams));
+        $linkUri = trim(array_shift($linkParams), " \f\n\r\t\v\x00");
         $this->assertStringStartsWith('<', $linkUri);
         $this->assertStringEndsWith('>', $linkUri);
 
         foreach ($linkParams as $linkParam) {
             $linkParam = explode('=', $linkParam);
             $this->assertEquals(2, count($linkParam));
-            $linkParamName = trim($linkParam[0]);
-            $linkParamValue = str_replace('"', '', trim($linkParam[1]));
+            $linkParamName = trim($linkParam[0], " \f\n\r\t\v\x00");
+            $linkParamValue = str_replace('"', '', trim($linkParam[1], " \f\n\r\t\v\x00"));
             $this->assertContains($linkParamName, ['rel', 'as', 'crossorigin']);
 
             if ($linkParamName === 'crossorigin') {
