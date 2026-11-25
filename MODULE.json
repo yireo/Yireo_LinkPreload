@@ -7,6 +7,7 @@
     "modules": [
         "Magento_Backend",
         "Magento_Config",
+        "Magento_Csp",
         "Magento_Directory",
         "Magento_Store",
         "Magento_Theme"
@@ -40,8 +41,8 @@
         }
     ],
     "tests": {
-        "unit": 0,
-        "integration": 7,
+        "unit": 26,
+        "integration": 16,
         "functional": 0
     },
     "module_name": "Yireo_LinkPreload",
