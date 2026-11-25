@@ -6,6 +6,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.0] - 25 November 2026
+### Added
+- New settings "Maximum Links" (default 30) and "Maximum Header Length" (default 4096 bytes) to limit the size of the Link header
+- Support for PHP 8.5
+
+### Changed
+- Requires PHP 8.2 or higher; support for PHP 8.1 and older is dropped
+
+### Fixed
+- Scripts were downloaded twice under Magento 2.4.7+ SRI, because preload tags lacked the script's integrity and crossorigin attributes (#50, #47)
+- Scripts with a boolean defer or async attribute were wrongly preloaded
+- Crafted src/href values could inject entries into the Link header or break the response; preload URLs are now validated and encoded, and very large pages (over 2 MB) are skipped
+- Non-HTML responses were processed, and a parsing failure could break the page; parsing errors are now logged instead
+- Preload tags are only inserted inside <head>, and only URLs starting with the base URL are made relative
+- Require patched symfony/dom-crawler versions, avoiding the XXE advisory in DomCrawler::addXmlContent()
+- The linkpreload cookie now sets path, Secure and SameSite=Lax
+- PHP 8.6 deprecation warnings from trim()
+
 ## [1.4.25] - 19 May 2026
 ### Fixed
 - Allow removing stylesheets from preload
