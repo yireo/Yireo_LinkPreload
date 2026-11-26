@@ -20,7 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Crafted src/href values could inject entries into the Link header or break the response; preload URLs are now validated and encoded, and very large pages (over 2 MB) are skipped
 - Non-HTML responses were processed, and a parsing failure could break the page; parsing errors are now logged instead
 - Preload tags are only inserted inside <head>, and only URLs starting with the base URL are made relative
-- Require patched symfony/dom-crawler versions, avoiding the XXE advisory in DomCrawler::addXmlContent()
+- Require patched symfony/dom-crawler versions, avoiding the XXE advisory in DomCrawler::addXmlContent(), and exclude 8.x which dropped the HTML5 parser argument
 - The linkpreload cookie now sets path, Secure and SameSite=Lax
 - PHP 8.6 deprecation warnings from trim()
 
